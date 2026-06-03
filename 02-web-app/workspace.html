@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIDV Home GĐ3 — BA Super App</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  <div class="stitch-layout">
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="stitch-sidebar">
+      <div class="sidebar-brand" style="cursor: pointer;" onclick="window.location.href='index.html'">
+        <span class="material-symbols-rounded brand-icon">architecture</span>
+        <span class="brand-text">BA Super App</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group-title">Menu chính</div>
+        <a href="index.html" class="nav-item">
+          <span class="material-symbols-rounded">dashboard</span>
+          <span class="nav-text">Tổng quan</span>
+        </a>
+        <a href="#" class="nav-item active">
+          <span class="material-symbols-rounded">folder_open</span>
+          <span class="nav-text">Dự án hiện tại</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <main class="stitch-main">
+      <header class="main-header">
+        <div class="header-search">
+          <span class="material-symbols-rounded">search</span>
+          <input type="text" placeholder="Tìm kiếm trong dự án BIDV Home GĐ3...">
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn"><span class="material-symbols-rounded">more_vert</span></button>
+        </div>
+      </header>
+
+      <div class="main-canvas">
+        
+        <!-- Workspace Header -->
+        <div class="workspace-header">
+          <div class="workspace-title">
+            BIDV Home GĐ3 
+            <span class="domain-badge">Banking</span>
+            <button class="icon-btn" style="width: 32px; height: 32px;"><span class="material-symbols-rounded" style="font-size: 18px;">settings</span></button>
+          </div>
+          <div class="workspace-meta">Tạo: 28/05/2026 · Cập nhật: 2 giờ trước · Readiness: 65%</div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+          <div class="tab-item"><span class="material-symbols-rounded">info</span> Thông tin dự án</div>
+          <div class="tab-item active"><span class="material-symbols-rounded">download</span> Nguồn dữ liệu</div>
+          <div class="tab-item"><span class="material-symbols-rounded">psychology</span> Tri thức dự án</div>
+          <div class="tab-item"><span class="material-symbols-rounded">view_kanban</span> Pipeline</div>
+          <div class="tab-item"><span class="material-symbols-rounded">analytics</span> Báo cáo</div>
+        </div>
+
+        <!-- Tab Content: Data Ingestion -->
+        <div>
+          <h3 class="section-title">Trung tâm nạp dữ liệu</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 24px;">Nạp tài liệu thô, HSYC, meeting notes để AI tự động phân tích và trích xuất tri thức.</p>
+          
+          <div class="ingestion-channels">
+            <div class="channel-card">
+              <span class="material-symbols-rounded">edit_document</span>
+              <span>Paste Text</span>
+            </div>
+            <div class="channel-card">
+              <span class="material-symbols-rounded">upload_file</span>
+              <span>Upload File</span>
+            </div>
+            <div class="channel-card">
+              <span class="material-symbols-rounded">link</span>
+              <span>URL Fetch</span>
+            </div>
+            <div class="channel-card">
+              <span class="material-symbols-rounded">forward_to_inbox</span>
+              <span>Email Forward</span>
+            </div>
+            <div class="channel-card">
+              <span class="material-symbols-rounded">library_books</span>
+              <span>Template</span>
+            </div>
+          </div>
+
+          <div class="source-list">
+            <div class="source-header">
+              <span>Tài liệu đã nạp (3)</span>
+              <button class="secondary-btn" style="padding: 6px 12px; font-size: 13px;"><span class="material-symbols-rounded" style="font-size: 16px;">psychology</span> Parse tất cả</button>
+            </div>
+            
+            <div class="source-item">
+              <div class="source-info">
+                <div class="source-icon"><span class="material-symbols-rounded">description</span></div>
+                <div class="source-details">
+                  <div class="source-name">HSYC-BIDV Home GD3.docx</div>
+                  <div class="source-meta">Loại: RFP · 15,018 ký tự · Nạp: 28/05/2026</div>
+                </div>
+              </div>
+              <div class="source-status status-parsed">Đã xử lý</div>
+              <div class="source-actions">
+                <button class="icon-btn" title="Xem"><span class="material-symbols-rounded">visibility</span></button>
+                <button class="icon-btn" title="Parse lại"><span class="material-symbols-rounded">psychology</span></button>
+                <button class="icon-btn" title="Xóa"><span class="material-symbols-rounded">delete</span></button>
+              </div>
+            </div>
+
+            <div class="source-item">
+              <div class="source-info">
+                <div class="source-icon"><span class="material-symbols-rounded">speaker_notes</span></div>
+                <div class="source-details">
+                  <div class="source-name">Meeting Notes - Kick-off</div>
+                  <div class="source-meta">Loại: Notes · 2,300 ký tự · Nạp: 27/05/2026</div>
+                </div>
+              </div>
+              <div class="source-status status-pending">Chờ xử lý</div>
+              <div class="source-actions">
+                <button class="icon-btn" title="Xem"><span class="material-symbols-rounded">visibility</span></button>
+                <button class="icon-btn" title="Parse AI"><span class="material-symbols-rounded">psychology</span></button>
+                <button class="icon-btn" title="Xóa"><span class="material-symbols-rounded">delete</span></button>
+              </div>
+            </div>
+
+            <div class="source-item">
+              <div class="source-info">
+                <div class="source-icon"><span class="material-symbols-rounded">link</span></div>
+                <div class="source-details">
+                  <div class="source-name">https://jira.bidv.com/wiki/HSYC</div>
+                  <div class="source-meta">Loại: URL · 8,500 ký tự · Nạp: 26/05/2026</div>
+                </div>
+              </div>
+              <div class="source-status status-parsed">Đã xử lý</div>
+              <div class="source-actions">
+                <button class="icon-btn" title="Xem"><span class="material-symbols-rounded">visibility</span></button>
+                <button class="icon-btn" title="Parse lại"><span class="material-symbols-rounded">psychology</span></button>
+                <button class="icon-btn" title="Xóa"><span class="material-symbols-rounded">delete</span></button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

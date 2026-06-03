@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BA Super App — Prototype</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: {
+    fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
+    colors: { brand: { 50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca' } }
+  }}}
+</script>
+<style>
+  body{font-family:Inter,system-ui,sans-serif}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+  .shimmer{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 37%,#f1f5f9 63%);background-size:400% 100%;animation:sh 1.2s infinite}
+  @keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+  .tab-active{color:#4f46e5;border-color:#4f46e5}
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800 h-screen overflow-hidden">
+
+<!-- ===== TOP BAR ===== -->
+<header class="h-14 bg-white border-b border-slate-200 flex items-center px-4 gap-4 shrink-0">
+  <div class="flex items-center gap-2 font-bold text-brand-700">
+    <div class="w-8 h-8 rounded-lg bg-brand-600 text-white grid place-items-center">BA</div>
+    <span>BA Super App</span>
+  </div>
+  <div class="text-slate-300">/</div>
+  <div id="topProject" class="text-sm font-medium text-slate-600">Mytel Self-care App</div>
+  <div class="ml-auto flex items-center gap-2">
+    <label class="text-xs text-slate-500">Đầu ra:</label>
+    <select id="docType" class="text-sm border border-slate-200 rounded-lg px-2 py-1.5 bg-slate-50 focus:ring-2 focus:ring-brand-500 outline-none">
+      <option>SRS (IEEE 830)</option><option>BRD</option><option>FSD</option><option>User Stories</option><option>Function List</option>
+    </select>
+    <button onclick="regenerate('all')" class="text-sm bg-brand-600 hover:bg-brand-700 text-white font-medium px-3.5 py-1.5 rounded-lg flex items-center gap-1.5">
+      ✨ Generate
+    </button>
+    <div class="w-8 h-8 rounded-full bg-amber-400 text-white grid place-items-center text-sm font-semibold ml-1">B</div>
+  </div>
+</header>
+
+<div class="flex h-[calc(100vh-3.5rem)]">
+
+  <!-- ===== LEFT: WORKSPACE SWITCHER ===== -->
+  <aside class="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0">
+    <div class="px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wide flex items-center justify-between">
+      Workspaces <span class="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">🔒 Cô lập</span>
+    </div>
+    <nav id="projectList" class="px-2 space-y-1 overflow-y-auto flex-1"></nav>
+    <button class="m-2 text-sm text-brand-700 border border-dashed border-slate-300 hover:border-brand-400 rounded-lg py-2 font-medium">+ Dự án mới</button>
+    <div class="px-4 py-3 border-t border-slate-100 text-[11px] text-slate-400">
+      RAG · Agentic · Multi-tenant<br>Ngữ cảnh không rò rỉ giữa dự án.
+    </div>
+  </aside>
+
+  <!-- ===== CENTER: CANVAS ===== -->
+  <main class="flex-1 flex flex-col min-w-0">
+    <div class="bg-white border-b border-slate-200 px-4 flex gap-1 text-sm shrink-0">
+      <button onclick="tab('elicit',this)" class="tab tab-active py-3 px-3 border-b-2 font-medium">💬 Khơi phá</button>
+      <button onclick="tab('blueprint',this)" class="tab py-3 px-3 border-b-2 border-transparent text-slate-500 font-medium">🗺️ Blueprint</button>
+      <button onclick="tab('doc',this)" class="tab py-3 px-3 border-b-2 border-transparent text-slate-500 font-medium">📄 Tài liệu</button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-5">
+
+      <!-- TAB: ELICITATION -->
+      <section data-pane="elicit" class="space-y-4 max-w-3xl">
+        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-brand-100 text-brand-700 grid place-items-center text-sm shrink-0">AI</div>
+          <div class="bg-white border border-slate-200 rounded-xl rounded-tl-none p-3 text-sm">Ý tưởng "app chăm sóc khách hàng self-care" khá rộng. <b>Mục tiêu kinh doanh chính</b> là giảm tải tổng đài, hay tăng tỉ lệ tự phục vụ? 🤔</div></div>
+        <div class="flex gap-3 flex-row-reverse"><div class="w-8 h-8 rounded-full bg-amber-400 text-white grid place-items-center text-sm shrink-0">B</div>
+          <div class="bg-brand-600 text-white rounded-xl rounded-tr-none p-3 text-sm">Giảm 30% cuộc gọi tổng đài về tra cứu cước & gói.</div></div>
+        <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-brand-100 text-brand-700 grid place-items-center text-sm shrink-0">AI</div>
+          <div class="bg-white border border-slate-200 rounded-xl rounded-tl-none p-3 text-sm">Rõ rồi. Vậy <b>persona</b> chính là thuê bao trả trước hay trả sau? Và họ tra cứu trên kênh nào — App, Web hay Telegram?</div></div>
+        <div class="pt-1">
+          <div class="text-xs text-slate-400 mb-1.5">Gợi ý câu hỏi tiếp:</div>
+          <div class="flex flex-wrap gap-2">
+            <button class="text-xs bg-white border border-slate-200 hover:border-brand-400 rounded-full px-3 py-1.5">Liệt kê các use case cốt lõi</button>
+            <button class="text-xs bg-white border border-slate-200 hover:border-brand-400 rounded-full px-3 py-1.5">Ràng buộc phi chức năng (NFR)?</button>
+            <button class="text-xs bg-white border border-slate-200 hover:border-brand-400 rounded-full px-3 py-1.5">Tạo persona tự động</button>
+          </div>
+        </div>
+        <div class="flex gap-2 pt-2"><input class="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Trả lời hoặc nêu ý tưởng…"><button class="bg-brand-600 text-white px-4 rounded-xl text-sm font-medium">Gửi</button></div>
+      </section>
+
+      <!-- TAB: BLUEPRINT -->
+      <section data-pane="blueprint" class="hidden">
+        <div class="flex items-center justify-between mb-3"><h2 class="font-semibold">Function List & User Story Map</h2>
+          <span class="text-xs text-slate-400">Tự sinh từ ngữ cảnh • có thể kéo-thả</span></div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-xs font-semibold text-slate-500 mb-2 uppercase">M1 · Tra cứu</div>
+            <div class="space-y-2 text-sm">
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Xem cước hiện tại <span class="text-[10px] bg-red-50 text-red-600 px-1.5 rounded">Must</span></div>
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Lịch sử cước 6 tháng <span class="text-[10px] bg-amber-50 text-amber-600 px-1.5 rounded">Should</span></div>
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Tra cứu gói data <span class="text-[10px] bg-red-50 text-red-600 px-1.5 rounded">Must</span></div>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-xs font-semibold text-slate-500 mb-2 uppercase">M2 · Giao dịch</div>
+            <div class="space-y-2 text-sm">
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Đăng ký gói <span class="text-[10px] bg-red-50 text-red-600 px-1.5 rounded">Must</span></div>
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Nạp tiền <span class="text-[10px] bg-red-50 text-red-600 px-1.5 rounded">Must</span></div>
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Hẹn lịch tự nạp <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 rounded">Could</span></div>
+            </div>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl p-3">
+            <div class="text-xs font-semibold text-slate-500 mb-2 uppercase">M3 · Hỗ trợ</div>
+            <div class="space-y-2 text-sm">
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Chatbot FAQ <span class="text-[10px] bg-amber-50 text-amber-600 px-1.5 rounded">Should</span></div>
+              <div class="border border-slate-100 rounded-lg p-2 flex justify-between items-center">Tạo ticket khiếu nại <span class="text-[10px] bg-amber-50 text-amber-600 px-1.5 rounded">Should</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 bg-white border border-slate-200 rounded-xl p-3">
+          <div class="text-xs font-semibold text-slate-500 mb-2">Use Case Diagram (text-to-diagram)</div>
+          <pre class="text-xs bg-slate-50 rounded-lg p-3 text-slate-600 overflow-x-auto">flowchart LR
+  TB([Thuê bao]) --> TC[Tra cứu cước]
+  TB --> DK[Đăng ký gói]
+  TB --> NT[Nạp tiền]
+  DK -.OBO.-> CSKH{{Hệ thống tính cước}}</pre>
+        </div>
+      </section>
+
+      <!-- TAB: DOCUMENT -->
+      <section data-pane="doc" class="hidden max-w-3xl">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold">SRS — Mytel Self-care App <span class="text-xs font-normal text-slate-400">v0.1 · Draft</span></h2>
+          <div class="flex gap-1.5 text-xs">
+            <button class="border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white hover:border-brand-400">⬇ Word</button>
+            <button class="border border-slate-200 rounded-lg px-2.5 py-1.5 bg-white hover:border-brand-400">⬇ Markdown</button>
+          </div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+          <div class="p-4 group"><div class="flex justify-between"><h3 class="font-semibold text-sm">1. Mục đích & Phạm vi</h3>
+            <button onclick="regenerate(this)" class="opacity-0 group-hover:opacity-100 text-xs text-brand-600">↻ Regenerate section</button></div>
+            <p class="text-sm text-slate-600 mt-1.5 leading-relaxed">Hệ thống self-care cho phép thuê bao Mytel tự tra cứu cước, đăng ký gói và nạp tiền trên App/Web nhằm <b>giảm 30%</b> cuộc gọi tổng đài…</p></div>
+          <div class="p-4 group"><div class="flex justify-between"><h3 class="font-semibold text-sm">3.1 FR-001 — Xem cước hiện tại</h3>
+            <button onclick="regenerate(this)" class="opacity-0 group-hover:opacity-100 text-xs text-brand-600">↻ Regenerate section</button></div>
+            <p class="text-sm text-slate-600 mt-1.5"><b>AC (Given-When-Then):</b> Given thuê bao đã đăng nhập, When mở mục "Cước", Then hiển thị cước kỳ hiện tại trong ≤ 3s.</p></div>
+          <div class="p-4 group"><div class="flex justify-between"><h3 class="font-semibold text-sm">4. Yêu cầu phi chức năng (NFR)</h3>
+            <button onclick="regenerate(this)" class="opacity-0 group-hover:opacity-100 text-xs text-brand-600">↻ Regenerate section</button></div>
+            <p class="text-sm text-slate-600 mt-1.5">Bảo mật theo OBO; p95 truy vấn &lt; 3s; tuân thủ NĐ 13/2023…</p></div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===== RIGHT: CONTEXT & REVIEW ===== -->
+  <aside class="w-80 bg-white border-l border-slate-200 flex flex-col shrink-0 overflow-y-auto">
+    <div class="p-4 border-b border-slate-100">
+      <div class="text-xs font-semibold text-slate-400 uppercase mb-2">Nguồn (Context)</div>
+      <div class="space-y-1.5 text-sm">
+        <div class="flex items-center gap-2 text-slate-600">📄 BRD_Mytel_v2.docx</div>
+        <div class="flex items-center gap-2 text-slate-600">🖼️ wireframe_home.png</div>
+        <div class="flex items-center gap-2 text-slate-600">📐 Template_SRS_cty.md <span class="text-[10px] bg-brand-50 text-brand-600 px-1.5 rounded">template</span></div>
+      </div>
+    </div>
+    <div class="p-4 border-b border-slate-100">
+      <div class="flex items-center justify-between mb-2"><div class="text-xs font-semibold text-slate-400 uppercase">Review chất lượng</div>
+        <div class="text-xs font-bold text-emerald-600">82/100</div></div>
+      <div class="space-y-2 text-sm">
+        <div class="border-l-2 border-red-400 bg-red-50/50 rounded-r-lg p-2"><span class="text-[10px] font-bold text-red-600">XUNG ĐỘT</span><div class="text-slate-600 text-xs mt-0.5">FR-003 yêu cầu "nạp tối thiểu 10k" nhưng FR-009 cho "nạp 5k". Cần thống nhất.</div></div>
+        <div class="border-l-2 border-amber-400 bg-amber-50/50 rounded-r-lg p-2"><span class="text-[10px] font-bold text-amber-600">MƠ HỒ</span><div class="text-slate-600 text-xs mt-0.5">"giao diện thân thiện" — chưa đo được. Đề xuất AC cụ thể.</div></div>
+        <div class="border-l-2 border-slate-300 bg-slate-50 rounded-r-lg p-2"><span class="text-[10px] font-bold text-slate-500">THIẾU</span><div class="text-slate-600 text-xs mt-0.5">3 FR chưa có Acceptance Criteria.</div></div>
+      </div>
+    </div>
+    <div class="p-4">
+      <div class="text-xs font-semibold text-slate-400 uppercase mb-2">Traceability (RTM)</div>
+      <table class="w-full text-xs"><tbody class="divide-y divide-slate-100">
+        <tr><td class="py-1.5 text-slate-500">REQ-01</td><td class="text-slate-600">→ FR-001 → US-12</td></tr>
+        <tr><td class="py-1.5 text-slate-500">REQ-02</td><td class="text-slate-600">→ FR-002 → US-14</td></tr>
+        <tr><td class="py-1.5 text-red-500">REQ-05</td><td class="text-red-500">⚠ mồ côi (chưa có FR)</td></tr>
+      </tbody></table>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const projects = [
+    {id:'mytel', name:'Mytel Self-care App', meta:'12 tài liệu · 24 FR'},
+    {id:'lms', name:'EvoLMS — E-learning', meta:'8 tài liệu · 31 FR'},
+    {id:'hrm', name:'HRM Portal', meta:'5 tài liệu · 18 FR'},
+  ];
+  let active = 'mytel';
+  function renderProjects(){
+    document.getElementById('projectList').innerHTML = projects.map(p=>`
+      <button onclick="swap('${p.id}')" class="w-full text-left px-3 py-2.5 rounded-lg ${p.id===active?'bg-brand-50 text-brand-700 font-semibold':'hover:bg-slate-50 text-slate-600'}">
+        <div class="text-sm flex items-center gap-2">${p.id===active?'<span class=\\'w-1.5 h-1.5 rounded-full bg-brand-600 inline-block\\'></span>':''}${p.name}</div>
+        <div class="text-[11px] text-slate-400 ml-0 mt-0.5">${p.meta}</div>
+      </button>`).join('');
+  }
+  function swap(id){ active=id; const p=projects.find(x=>x.id===id);
+    document.getElementById('topProject').textContent=p.name; renderProjects();
+    // mô phỏng nạp lại ngữ cảnh cô lập
+    document.querySelectorAll('[data-pane]').forEach(el=>{el.style.opacity='.4'});
+    setTimeout(()=>document.querySelectorAll('[data-pane]').forEach(el=>{el.style.opacity='1'}),350);
+  }
+  function tab(name,btn){
+    document.querySelectorAll('.tab').forEach(b=>{b.classList.remove('tab-active');b.classList.add('border-transparent','text-slate-500')});
+    btn.classList.add('tab-active');btn.classList.remove('border-transparent','text-slate-500');
+    document.querySelectorAll('[data-pane]').forEach(el=>el.classList.toggle('hidden',el.dataset.pane!==name));
+  }
+  function regenerate(target){
+    let el = (target==='all') ? document.querySelector('[data-pane="doc"]') : target.closest('.group').querySelector('p');
+    if(!el) return; const html=el.innerHTML; el.innerHTML='<span class="shimmer inline-block w-full h-4 rounded"></span>';
+    setTimeout(()=>el.innerHTML=html, 900);
+    if(target==='all'){ tab('doc', document.querySelectorAll('.tab')[2]); }
+  }
+  renderProjects();
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Env & secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Build / cache
+dist/
+build/
+.cache/
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local clones / temp (vd thư mục clone tạm khi đẩy git)
+*-remote/
+*-remote2/
+
+# Outputs sinh ra theo dự án (giữ README + cấu trúc, bỏ deliverable thật nếu nhạy cảm)
+# 04-outputs/*/
+# !04-outputs/README.md

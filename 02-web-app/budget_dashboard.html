@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIDV Home GĐ3 — Báo Giá + Độ Phức Tạp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#0f1115;--surface:rgba(22,25,32,.6);--border:rgba(255,255,255,.06);
+            --text:#f3f4f6;--text2:#9ca3af;--brand:#3b82f6;--brand2:#60a5fa;
+            --green:#10b981;--amber:#f59e0b;--red:#ef4444;--purple:#a855f7;
+        }
+        body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;
+            background-image:radial-gradient(at 0% 0%,hsla(253,16%,7%,1) 0,transparent 50%),
+            radial-gradient(at 50% 0%,hsla(225,39%,30%,.1) 0,transparent 50%),
+            radial-gradient(at 100% 0%,hsla(339,49%,30%,.1) 0,transparent 50%);
+            background-attachment:fixed;padding:2rem}
+        .container{max-width:1500px;margin:0 auto}
+        .header{text-align:center;margin-bottom:2rem}
+        .header h1{font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--brand2),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .header p{color:var(--text2);font-size:.8rem;margin-top:.25rem}
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem;margin-bottom:1.5rem}
+        .stat-card{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem;transition:transform .2s}
+        .stat-card:hover{transform:translateY(-2px)}
+        .stat-card .label{font-size:.6rem;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+        .stat-card .value{font-size:1.2rem;font-weight:700;margin-top:.15rem}
+        .stat-card .sub{font-size:.6rem;color:var(--text2);margin-top:.1rem}
+        .c-brand{color:var(--brand2)}.c-green{color:var(--green)}.c-amber{color:var(--amber)}.c-purple{color:var(--purple)}.c-red{color:var(--red)}
+
+        .legend{display:flex;gap:2rem;justify-content:center;margin-bottom:.8rem;flex-wrap:wrap}
+        .legend-item{display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:var(--text2)}
+        .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+        .dot-done{background:var(--green)}.dot-rsd{background:var(--amber)}
+
+        .bm-note{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:.8rem 1.2rem;margin-bottom:1rem;font-size:.72rem;color:var(--text2);line-height:1.6}
+        .bm-note strong{color:var(--text)}
+        .bar{height:6px;border-radius:3px;display:flex;overflow:hidden;margin-top:.3rem}
+        .bar-done{background:var(--green)}.bar-rsd{background:var(--amber)}
+
+        .cx-scale{display:flex;gap:.3rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+        .cx-chip{font-size:.6rem;padding:.15rem .5rem;border-radius:12px;border:1px solid var(--border);color:var(--text2)}
+
+        .filters{display:flex;gap:.4rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+        .filter-btn{padding:.35rem .8rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:.7rem;cursor:pointer;transition:all .2s;font-family:inherit}
+        .filter-btn:hover,.filter-btn.active{background:rgba(59,130,246,.15);color:var(--brand2);border-color:rgba(59,130,246,.3)}
+        .filter-btn.f-done{background:rgba(16,185,129,.15);color:var(--green);border-color:rgba(16,185,129,.3)}
+        .filter-btn.f-rsd{background:rgba(245,158,11,.15);color:var(--amber);border-color:rgba(245,158,11,.3)}
+
+        .table-wrap{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1.5rem}
+        .table-header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;border-bottom:1px solid var(--border)}
+        .table-header h2{font-size:.85rem;font-weight:600}
+        .badge{font-size:.6rem;padding:.2rem .5rem;border-radius:20px;font-weight:500;background:rgba(59,130,246,.15);color:var(--brand2)}
+        table{width:100%;border-collapse:collapse;font-size:.74rem}
+        th{background:rgba(32,36,45,.8);color:var(--text2);font-weight:600;text-transform:uppercase;font-size:.58rem;letter-spacing:.05em;padding:.45rem .5rem;text-align:left;position:sticky;top:0;z-index:2}
+        th:nth-child(n+4){text-align:right}
+        th.th-cx{text-align:center}
+        td{padding:.35rem .5rem;border-bottom:1px solid var(--border);vertical-align:middle}
+        td:nth-child(n+4){text-align:right;font-variant-numeric:tabular-nums}
+        td.td-cx{text-align:center}
+
+        .status{display:inline-block;font-size:.52rem;padding:.12rem .35rem;border-radius:8px;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+        .s-done{background:rgba(16,185,129,.15);color:var(--green)}
+        .s-rsd{background:rgba(245,158,11,.15);color:var(--amber)}
+
+        /* Complexity indicator */
+        .cx-badge{display:inline-flex;align-items:center;gap:.25rem;font-size:.65rem;font-weight:600;padding:.15rem .4rem;border-radius:8px}
+        .cx-1,.cx-2{background:rgba(16,185,129,.12);color:#34d399}
+        .cx-3,.cx-4{background:rgba(59,130,246,.12);color:#60a5fa}
+        .cx-5,.cx-6{background:rgba(245,158,11,.12);color:#fbbf24}
+        .cx-7,.cx-8{background:rgba(249,115,22,.15);color:#fb923c}
+        .cx-9,.cx-10{background:rgba(239,68,68,.15);color:#f87171}
+        .cx-bar{display:inline-block;height:4px;border-radius:2px;vertical-align:middle}
+        .cx-bar-1,.cx-bar-2{background:#34d399}
+        .cx-bar-3,.cx-bar-4{background:#60a5fa}
+        .cx-bar-5,.cx-bar-6{background:#fbbf24}
+        .cx-bar-7,.cx-bar-8{background:#fb923c}
+        .cx-bar-9,.cx-bar-10{background:#f87171}
+
+        .row-section{background:rgba(59,130,246,.08);font-weight:700;font-size:.78rem}
+        .row-section td{border-bottom:2px solid rgba(59,130,246,.2);padding:.5rem}
+        .row-group{background:rgba(168,85,247,.05);font-weight:600;cursor:pointer}
+        .row-group:hover{background:rgba(168,85,247,.1)}
+        .row-group td{border-bottom:1px solid rgba(168,85,247,.15)}
+        .row-sub{background:rgba(16,185,129,.04);font-weight:600}
+        .row-sub td{border-bottom:1px solid rgba(16,185,129,.1)}
+        .row-item{transition:background .15s}
+        .row-item:hover{background:rgba(255,255,255,.03)}
+        .row-item td:first-child{padding-left:1.8rem;color:var(--text2)}
+        .row-subtotal{background:rgba(245,158,11,.04);font-weight:600}
+        .row-subtotal td{border-top:1px dashed rgba(245,158,11,.2);color:var(--amber)}
+        .row-total{background:rgba(59,130,246,.1);font-weight:700}
+        .row-total td{border-top:2px solid rgba(59,130,246,.3);color:var(--brand2)}
+        .row-grand{background:linear-gradient(90deg,rgba(59,130,246,.12),rgba(168,85,247,.08));font-weight:700;font-size:.8rem}
+        .row-grand td{border-top:2px solid var(--brand);padding:.5rem}
+        .toggle-icon{display:inline-block;width:12px;margin-right:.3rem;transition:transform .2s;color:var(--text2);font-size:.65rem}
+        .collapsed .toggle-icon{transform:rotate(-90deg)}
+        .hidden-row{display:none}
+        .footer{text-align:center;color:var(--text2);font-size:.6rem;padding:1.5rem 0;opacity:.6}
+
+        @media print{
+            body{background:#fff!important;color:#000!important;padding:.5cm}
+            .stat-card,.table-wrap,.bm-note{border:1px solid #ddd;background:#fff!important;backdrop-filter:none}
+            th{background:#f0f0f0!important;color:#333!important}
+            td{color:#000!important;border-color:#ddd!important}
+            .hidden-row{display:table-row!important}
+            .filters,.cx-scale{display:none}
+        }
+        @media(max-width:768px){body{padding:1rem}.summary-grid{grid-template-columns:1fr 1fr}table{font-size:.65rem}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📊 BIDV Home GĐ3 — Bảng Cân Đối Dự Toán Năng Suất (544 MD)</h1>
+        <p>Cơ cấu nỗ lực: Development 53%, Testing 16%, BA 12%, Design/Architecture 10%, PM+QA 9%</p>
+    </div>
+
+    <div class="bm-note">
+        <strong>📋 Phân Bổ Resource (544 MD):</strong>
+        Development: <strong>290 MD</strong> ·
+        Testing: <strong>84 MD</strong> ·
+        BA: <strong>65 MD</strong> ·
+        Design / Architecture: <strong>55 MD</strong> ·
+        PM + QA: <strong>50 MD</strong><br/>
+        <em>Dữ liệu Detail (ALL_SECTIONS) đã được tính toán scale-down tương ứng để tổng MD cho lập trình khớp đúng chuẩn 290 MD.</em>
+        <div class="bar" id="statusBar"></div>
+    </div>
+
+    <div class="summary-grid" id="summary"></div>
+
+    <div class="cx-scale" id="cxScale"></div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot dot-done"></div>✅ Đã có RSD — Dev+Test</div>
+        <div class="legend-item"><div class="legend-dot dot-rsd"></div>🔶 Cần BA+RSD — Full lifecycle</div>
+    </div>
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterRows('all')">Tất cả</button>
+        <button class="filter-btn" data-f="done" onclick="filterRows('done')">✅ Đã có RSD</button>
+        <button class="filter-btn" data-f="rsd" onclick="filterRows('rsd')">🔶 Cần BA+RSD</button>
+        <button class="filter-btn" onclick="filterByCx('high')">🔴 Cx ≥ 7</button>
+        <button class="filter-btn" onclick="filterByCx('med')">🟡 Cx 4-6</button>
+        <button class="filter-btn" onclick="filterByCx('low')">🟢 Cx ≤ 3</button>
+    </div>
+
+    <div class="table-wrap">
+        <div class="table-header">
+            <h2>BM1 — Báo giá toàn bộ chức năng</h2>
+            <span class="badge" id="itemCount"></span>
+        </div>
+        <div style="overflow-x:auto;max-height:72vh;overflow-y:auto">
+            <table><thead><tr>
+                <th style="width:20%">Công việc</th>
+                <th style="width:10%">Giai đoạn</th>
+                <th style="width:8%">BM2 Status</th>
+                <th class="th-cx" style="width:10%">Complexity</th>
+                <th style="width:25%">Lý do / Đánh giá</th>
+                <th>MD</th><th>Đơn giá</th><th>Thành tiền</th>
+            </tr></thead><tbody id="tbody"></tbody></table>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <div class="table-header"><h2>Tổng hợp toàn bộ dự án</h2></div>
+        <div style="overflow-x:auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:5%">STT</th>
+                        <th style="width:35%">Công việc</th>
+                        <th style="width:10%"></th>
+                        <th style="width:15%">Số ngày công (2)</th>
+                        <th>Đơn giá thuê ngoài (VNĐ)</th>
+                        <th>Thành tiền (VNĐ) (3)</th>
+                    </tr>
+                </thead>
+                <tbody id="totalBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">Auto-generated từ HSYC-BIDV Home GD3.docx — BM1×BM2×BM3 + Complexity · <span id="dt"></span></div>
+</div>
+<script src="budget_data.js"></script>
+<script>
+(function(){
+const fmt=n=>n.toLocaleString('vi-VN');
+const SL={done:'Đã có RSD',rsd:'Cần BA+RSD'};
+const SC={done:'s-done',rsd:'s-rsd'};
+
+function phaseBadges(pstr) {
+    if (!pstr) return '';
+    return pstr.split(' + ').map(p => {
+        if (p==='DEV') return '<span class="status" style="background:rgba(255,255,255,0.1);color:#a8c7fa">DEV</span>';
+        if (p==='SIT') return '<span class="status" style="background:rgba(120,217,236,0.2);color:#78d9ec">SIT</span>';
+        if (p==='RSD') return '<span class="status" style="background:rgba(253,198,140,0.2);color:#fdc68c">RSD</span>';
+        return '';
+    }).join(' ');
+}
+
+function cxBadge(cx){
+    const w=cx*10;
+    return `<span class="cx-badge cx-${cx}"><span class="cx-bar cx-bar-${cx}" style="width:${w}px"></span>${cx} ${CX_LABELS[cx]}</span>`;
+}
+function avgCxBadge(items){
+    if(!items.length) return '';
+    const avg=items.reduce((s,i)=>s+i.cx,0)/items.length;
+    const r=Math.round(avg);
+    return `<span class="cx-badge cx-${r}" style="font-size:.55rem">${avg.toFixed(1)}</span>`;
+}
+
+let totalMD=0,doneMD=0,rsdMD=0,doneN=0,rsdN=0;
+let cxDist=Array(11).fill(0);
+let allItems=[];
+
+ALL_SECTIONS.forEach(s=>s.groups.forEach(g=>g.subs.forEach(sub=>sub.items.forEach(i=>{
+    totalMD+=i.md;allItems.push(i);cxDist[i.cx]++;
+    if(i.status==='done'){doneMD+=i.md;doneN++}else{rsdMD+=i.md;rsdN++}
+}))));
+const totalN=doneN+rsdN;
+const devCost=totalMD*RATES.DEV;
+let grand = 0;
+let totalSummaryMD = 0;
+let summaryHtml = '';
+PROJECT_SUMMARY.forEach(row => {
+    const cost = row.md * RATES[row.rateKey];
+    grand += cost;
+    totalSummaryMD += row.md;
+    summaryHtml += `<tr class="row-item"><td>${row.stt}</td><td>${row.name}</td><td></td><td>${row.md.toFixed(1)}</td><td>${fmt(RATES[row.rateKey])}</td><td>${fmt(cost)}</td></tr>`;
+});
+const avgCx=(allItems.reduce((s,i)=>s+i.cx,0)/totalN).toFixed(1);
+
+// Status bar
+const dp=Math.round(doneN/totalN*100);
+document.getElementById('statusBar').innerHTML=`<div class="bar-done" style="width:${dp}%"></div><div class="bar-rsd" style="width:${100-dp}%"></div>`;
+
+// Complexity scale chips
+document.getElementById('cxScale').innerHTML=Array.from({length:10},(_,i)=>i+1).map(i=>
+    `<span class="cx-chip" style="opacity:${cxDist[i]?1:.3}">${i}:${CX_LABELS[i]} (${cxDist[i]})</span>`
+).join('');
+
+// Summary
+document.getElementById('summary').innerHTML=[
+    {l:'Tổng chức năng',v:totalN,s:`RSD: ${doneN} · BA: ${rsdN}`,c:'c-brand'},
+    {l:'✅ Đã có RSD',v:doneN,s:doneMD.toFixed(1)+' MD',c:'c-green'},
+    {l:'🔶 Cần BA+RSD (BM2)',v:rsdN,s:rsdMD.toFixed(1)+' MD',c:'c-amber'},
+    {l:'Avg Complexity',v:avgCx+'/10',s:`High(≥7): ${cxDist.slice(7).reduce((a,b)=>a+b,0)} items`,c:'c-red'},
+    {l:'Tổng MD Dev',v:totalMD.toFixed(1),s:`@ ${fmt(RATES.DEV)}/MD`,c:'c-purple'},
+    {l:'TỔNG DỰ ÁN',v:(grand/1e9).toFixed(3)+' tỷ',s:fmt(grand)+' VNĐ',c:'c-brand'},
+].map(c=>`<div class="stat-card"><div class="label">${c.l}</div><div class="value ${c.c}">${c.v}</div><div class="sub">${c.s}</div></div>`).join('');
+
+document.getElementById('itemCount').textContent=totalN+' items · '+totalMD.toFixed(1)+' MD · Avg Cx '+avgCx;
+
+// Table
+const tbody=document.getElementById('tbody');
+let html='';
+ALL_SECTIONS.forEach((sec,si)=>{
+    let secMD=0,secItems=[];
+    sec.groups.forEach(g=>g.subs.forEach(s=>{s.items.forEach(i=>{secMD+=i.md;secItems.push(i)})}));
+    if(secMD===0&&sec.groups.length===0){
+        html+=`<tr class="row-section"><td colspan="8">${sec.name}</td></tr>`;return;
+    }
+    html+=`<tr class="row-section"><td colspan="5">${sec.name}</td><td>${secMD>0?secMD.toFixed(1):''}</td><td></td><td>${secMD>0?fmt(secMD*RATES.DEV):''}</td></tr>`;
+
+    sec.groups.forEach((g,gi)=>{
+        let gMD=0,gDone=0,gRsd=0,gItems=[];
+        g.subs.forEach(s=>s.items.forEach(i=>{gMD+=i.md;gItems.push(i);i.status==='done'?gDone++:gRsd++}));
+        const gid=`g${si}_${gi}`;
+        html+=`<tr class="row-group" onclick="toggleGroup('${gid}')"><td><span class="toggle-icon">▼</span>${g.name}</td><td></td><td><span class="status s-done">${gDone}</span> <span class="status s-rsd">${gRsd}</span></td><td class="td-cx">${avgCxBadge(gItems)}</td><td></td><td>${gMD.toFixed(1)}</td><td></td><td>${fmt(gMD*RATES.DEV)}</td></tr>`;
+
+        g.subs.forEach(s=>{
+            let sMD=0;s.items.forEach(i=>sMD+=i.md);
+            html+=`<tr class="row-sub ${gid}"><td style="padding-left:1rem">${s.id}. ${s.name}</td><td></td><td></td><td class="td-cx">${avgCxBadge(s.items)}</td><td></td><td>${sMD.toFixed(1)}</td><td></td><td>${fmt(sMD*RATES.DEV)}</td></tr>`;
+            s.items.forEach(item=>{
+                html+=`<tr class="row-item ${gid}" data-status="${item.status}" data-cx="${item.cx}"><td>${item.name}</td><td style="white-space:nowrap">${phaseBadges(item.phases)}</td><td><span class="status ${SC[item.status]}">${SL[item.status]}</span></td><td class="td-cx">${cxBadge(item.cx)}</td><td style="color:var(--text2);font-size:0.65rem;text-align:left">${item.reason}</td><td>${item.md}</td><td>${fmt(RATES.DEV)}</td><td>${fmt(item.md*RATES.DEV)}</td></tr>`;
+            });
+        });
+        html+=`<tr class="row-subtotal ${gid}"><td colspan="2" style="padding-left:1rem">Cộng: ${g.name}</td><td></td><td></td><td></td><td>${gMD.toFixed(1)}</td><td></td><td>${fmt(gMD*RATES.DEV)}</td></tr>`;
+    });
+    if(secMD>0) html+=`<tr class="row-total"><td>CỘNG ${sec.name}</td><td></td><td></td><td></td><td>${secMD.toFixed(1)}</td><td></td><td>${fmt(secMD*RATES.DEV)}</td></tr>`;
+});
+html+=`<tr class="row-grand"><td>TỔNG LẬP TRÌNH</td><td></td><td></td><td></td><td>${totalMD.toFixed(1)}</td><td>${fmt(RATES.DEV)}</td><td>${fmt(devCost)}</td></tr>`;
+tbody.innerHTML=html;
+
+// Grand total
+document.getElementById('totalBody').innerHTML = summaryHtml
+    + `<tr class="row-total"><td></td><td>Tổng số ngày công của dự án</td><td></td><td>${totalSummaryMD.toFixed(1)}</td><td></td><td></td></tr>`
+    + `<tr class="row-grand"><td></td><td>Tổng số tiền để thực hiện dự án</td><td></td><td></td><td></td><td>${fmt(grand)}</td></tr>`;
+
+document.getElementById('dt').textContent=new Date().toLocaleDateString('vi-VN');
+
+window.toggleGroup=function(gid){
+    const rows=document.querySelectorAll('.'+gid);
+    const btn=document.querySelector(`[onclick="toggleGroup('${gid}')"]`);
+    const hide=rows.length>0&&!rows[0].classList.contains('hidden-row');
+    rows.forEach(r=>r.classList.toggle('hidden-row',hide));
+    if(btn) btn.classList.toggle('collapsed',hide);
+};
+window.filterRows=function(status){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active','f-done','f-rsd'));
+    event.target.classList.add(status==='all'?'active':'f-'+status);
+    document.querySelectorAll('[data-status]').forEach(r=>{
+        r.style.display=status==='all'?'':r.dataset.status===status?'':'none';
+    });
+};
+window.filterByCx=function(level){
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active','f-done','f-rsd'));
+    event.target.classList.add('active');
+    document.querySelectorAll('[data-cx]').forEach(r=>{
+        const cx=parseInt(r.dataset.cx);
+        if(level==='high') r.style.display=cx>=7?'':'none';
+        else if(level==='med') r.style.display=(cx>=4&&cx<=6)?'':'none';
+        else r.style.display=cx<=3?'':'none';
+    });
+};
+})();
+</script>
+</body>
+</html>

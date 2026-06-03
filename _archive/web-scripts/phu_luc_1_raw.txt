@@ -1,0 +1,214 @@
+﻿=== TABLE 3 (213 rows) - PHU LUC 1 ===
+R0: TT | Công việc (1) | Ngày công (2) | Đơn giá (VNĐ) (3) | Thành tiền (VNĐ) | Ghi chú
+R1: I | Quản lý dự án |  |  |  | 
+R2: I | Đảm bảo chất lượng |  |  |  | 
+R3: II | Khảo sát, phân tích |  |  |  | Chi tiết nội dung cần thực hiện tham chiếu tại Danh mục chức
+R4: III | Thiết kế hệ thống |  |  |  | 
+R5: IV | Lập trình (bao gồm cả kiểm thử nội bộ UT, chuyển giao kỹ thu |  |  |  | 
+R6: A | Backoffice |  |  |  | 
+R7: 1 | BO - Nâng cấp tính năng cũ |  |  |  | 
+R8: 1.1 | Màn hình khai báo chủ đầu tư |  |  |  | 
+R9:  | Web-  Sửa màn hình danh sách, chi tiết, thêm mới chủ đầu tư  |  |  |  | 
+R10:  | BE - Sửa API danh sách, chi tiết, thêm mới chủ đầu tư thêm t |  |  |  | 
+R11: 1.2 | Màn hình khai báo dự án |  |  |  | 
+R12:  | Web - Sửa màn hình chi tiết, thêm mới/chỉnh sửa dự án thêm t |  |  |  | 
+R13:  | Web- Sửa tab chi nhánh đầu mối và cho vay |  |  |  | 
+R14:  | BE - Sửa API lưu/sửa/xóa chi nhánh/cán bộ đầu mối |  |  |  | 
+R15:  | BE - Sửa API chi tiết, thêm mới dự án thêm thứ tự ưu tiên hi |  |  |  | 
+R16:  | BE - Sửa API danh sách dự án check lấy dữ liệu theo phân quy |  |  |  | 
+R17: 1.3 | Màn hình chi nhánh đầu mối vay |  |  |  | 
+R18:  | Web- Sửa màn hình thêm mới chi nhánh đầu mối vay |  |  |  | 
+R19:  | BE - Sửa API thêm/sửa chi nhánh đầu mối |  |  |  | 
+R20: 1.4 | Màn hình đăng tải video |  |  |  | 
+R21:  | Web- Sửa màn hình danh sách kèm điều kiện lọc (thêm trường t |  |  |  | 
+R22:  | Web- Sửa màn hình thêm mới/chỉnh sửa video (thêm trường thôn |  |  |  | 
+R23:  | Web- Sửa màn hình xem chi tiết video xe (thêm trường thông t |  |  |  | 
+R24:  | BE- Sửa API lưu và đẩy duyệt (thêm trường thông tin video ô  |  |  |  | 
+R25:  | BE- Sửa API danh sách video (thêm trường thông tin video ô t |  |  |  | 
+R26:  | BE- Sửa API xem chi tiết (thêm trường thông tin video ô tô) |  |  |  | 
+R27: 1.5 | Màn hình khai báo chương trình ưu đãi |  |  |  | 
+R28:  | Web- Sửa màn hình danh sách/chi tiết/thêm mới/chỉnh sửa khai |  |  |  | 
+R29:  | BE - Sửa API danh sách/chi tiết/thêm mới/sửa khai báo ưu đãi |  |  |  | 
+R30: 1.6 | Màn hình quản lý banner |  |  |  | 
+R31:  | Web- Sửa màn hình danh sách/chi tiết/thêm mới/chỉnh sửa chức |  |  |  | 
+R32:  | BE - Sửa API danh sách/chi tiết/thêm mới/sửa chức năng quản  |  |  |  | 
+R33: 1.7 | Màn hình quản lý tin tư vấn |  |  |  | 
+R34:  | Web- Sửa màn hình danh sách/chi tiết/thêm mới/chỉnh sửa chức |  |  |  | 
+R35:  | BE - Sửa API danh sách/chi tiết/thêm mới/sửa chức năng quản  |  |  |  | 
+R36: 1.8 | Màn hình quản lý OTT |  |  |  | 
+R37:  | Web- Sửa màn hình danh sách/chi tiết/thêm mới/chỉnh sửa chức |  |  |  | 
+R38:  | BE - Sửa API danh sách/chi tiết/thêm/sửa chức năng quản lý O |  |  |  | 
+R39: 1.9 | Màn hình quản lý khoản vay |  |  |  | 
+R40:  | Web- Sửa màn hình quản lý khoản vay cho phép cập nhật số PCA |  |  |  | 
+R41:  | BE - Sửa API cập nhật khoản vay và API chi tiết khoản vay |  |  |  | 
+R42: 1.10 | Màn hình quản lý tài khoản |  |  |  | 
+R43:  | Web- Sửa màn hình quản lý tài khoản cho phép tìm theo khoảng |  |  |  | 
+R44:  | BE- Sửa API danh sách tài khoản lọc theo khoảng ngày |  |  |  | 
+R45:  | BE - API export danh sách tài khoản |  |  |  | 
+R46: 2 | BO - Phát triển tính năng mới |  |  |  | 
+R47: 2.1 | Màn hình chính sách hoa hồng |  |  |  | 
+R48:  | Web- Màn hình danh sách chính sách hoa hồng (kèm tìm kiếm nâ |  |  |  | 
+R49:  | Web- Màn hình xem chi tiết chính sách hoa hồng |  |  |  | 
+R50:  | Web- Màn hình thêm mới chính sách hoa hồng (Tích hợp nhiều d |  |  |  | 
+R51:  | Web- Chỉnh sửa chính sách hoa hồng |  |  |  | 
+R52:  | Web- Đẩy duyệt/ phê duyệt/ từ chối/ xóa/ đổi trạng thái chín |  |  |  | 
+R53:  | BE- API danh sách chính sách hoa hồng |  |  |  | 
+R54:  | BE- API chi tiết chính sách hoa hồng |  |  |  | 
+R55:  | BE- API lấy danh sách showroom (chọn dropdownlist) |  |  |  | 
+R56:  | BE- API thêm mới chính sách hoa hồng |  |  |  | 
+R57:  | BE- API chỉnh sửa chính sách hoa hồng |  |  |  | 
+R58:  | BE- API đẩy duyệt/ phê duyệt/ từ chối chính sách hoa hồng |  |  |  | 
+R59:  | BE- API thay đổi trạng thái (active, inactive) chính sách ho |  |  |  | 
+R60:  | BE- API xóa chính sách hoa hồng |  |  |  | 
+R61: 2.2 | Màn hình quản lý Cộng tác viên |  |  |  | 
+R62:  | Web- Màn hình danh sách cộng tác viên (kèm điều kiện lọc) |  |  |  | 
+R63:  | Web- Màn hình xem chi tiết cộng tác viên |  |  |  | 
+R64:  | Web- Màn hình thêm mới cộng tác viên |  |  |  | 
+R65:  | Web- Chức năng upload file (import theo lô) |  |  |  | 
+R66:  | Web- Chỉnh sửa thông tin cộng tác viên |  |  |  | 
+R67:  | Web- Phê duyệt/từ chối/xóa yêu cầu |  |  |  | 
+R68:  | BE- API danh sách cộng tác viên |  |  |  | 
+R69:  | BE- API phê duyệt/ từ chối duyệt |  |  |  | 
+R70:  | BE- API  thêm mới thông tin cộng tác viên |  |  |  | 
+R71:  | BE - API sửa thông tin cộng tác viên |  |  |  | 
+R72:  | BE - API xóa thông tin cộng tác viên |  |  |  | 
+R73:  | BE - API xem chi tiết thông tin cộng tác viên |  |  |  | 
+R74:  | BE- API upload file và validate thông tin cộng tác viên |  |  |  | 
+R75: 2.3 | Màn hình quản lý sản phẩm vay |  |  |  | 
+R76:  | Web- Màn hình danh sách sản phẩm vay (kèm điều kiện lọc) |  |  |  | 
+R77:  | Web- Màn hình xem chi tiết sản phẩm vay |  |  |  | 
+R78:  | Web- Màn hình thêm mới sản phẩm vay |  |  |  | 
+R79:  | Web- Chỉnh sửa thông tin sản phẩm vay |  |  |  | 
+R80:  | Web- Phê duyệt/từ chối/xóa yêu cầu |  |  |  | 
+R81:  | BE- API danh sách sản phẩm vay |  |  |  | 
+R82:  | BE- API phê duyệt/ từ chối duyệt |  |  |  | 
+R83:  | BE- API  thêm mới sản phẩm vay |  |  |  | 
+R84:  | BE - API sửa thông tin sản phẩm vay |  |  |  | 
+R85:  | BE - API xóa thông tin sản phẩm vay |  |  |  | 
+R86:  | BE - API xem chi tiết thông tin sản phẩm vay |  |  |  | 
+R87: 2.4 | Màn hình quản lý mẫu email |  |  |  | 
+R88:  | Web- Màn hình Quản lý mẫu email |  |  |  | 
+R89:  | Web- Màn hình Thêm mới mẫu email |  |  |  | 
+R90:  | Web- Màn hình Chỉnh sửa mẫu email |  |  |  | 
+R91:  | Web- Màn hình Lịch sử chỉnh sửa |  |  |  | 
+R92:  | Web- Màn hình Xem trước mẫu email |  |  |  | 
+R93:  | BE- API lấy danh sách mẫu email |  |  |  | 
+R94:  | BE- API Thêm mới mẫu email |  |  |  | 
+R95:  | BE- API Chỉnh sửa mẫu email |  |  |  | 
+R96:  | BE- API Chi tiết mẫu email (bảo gồm thông tin lịch sử) |  |  |  | 
+R97: 2.5 | Màn hình quản lý cán bộ nhận |  |  |  | 
+R98:  | Web- màn hình Quản lý cán bộ nhận |  |  |  | 
+R99:  | Web- Import dữ liệu qua upload file Excel |  |  |  | 
+R100:  | Web- Màn hình thêm mới cán bộ nhận |  |  |  | 
+R101:  | Web- Màn hình chỉnh sửa cán bộ nhận |  |  |  | 
+R102:  | BE- API danh sách cán bộ nhận |  |  |  | 
+R103:  | BE- API Import dữ liệu qua upload file Excel |  |  |  | 
+R104:  | BE- API thêm mới cán bộ nhận |  |  |  | 
+R105:  | BE-  API chỉnh sửa cán bộ nhận |  |  |  | 
+R106:  | BE-  API chi tiết cán bộ nhận |  |  |  | 
+R107: 2.6 | Báo cáo các yêu cầu quá hạn xử lý |  |  |  | 
+R108:  | Job - Gửi email tự động |  |  |  | 
+R109: 2.7 | Báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R110:  | Web- màn hình báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R111:  | Web- export báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R112:  | BE- API lấy báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R113:  | BE- API export báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R114: 2.8 | Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R115:  | Web- Màn hình Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R116:  | Web- export Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R117:  | BE- API Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R118:  | BE- API export  Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R119: 2.9 | Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R120:  | Web- Màn hình Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R121:  | Web- export Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R122:  | BE- API Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R123:  | BE- API export  Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R124: 2.10 | Quản lý QR code |  |  |  | 
+R125:  | Web- Màn hình danh sách QR code |  |  |  | 
+R126:  | Web- Màn hình Thêm mới QR code |  |  |  | 
+R127:  | Web- Màn hình Chỉnh sửa QR code |  |  |  | 
+R128:  | Web- Màn hình xóa QR code |  |  |  | 
+R129:  | BE- API lấy danh sách QR code |  |  |  | 
+R130:  | BE- API Thêm mới QR code |  |  |  | 
+R131:  | BE- API lấy chi tiết QR code |  |  |  | 
+R132:  | BE- API Chỉnh sửa QR code |  |  |  | 
+R133:  | BE- API xóa QR code |  |  |  | 
+R134: B | Các chức năng FO cho Khách hàng |  |  |  | 
+R135: 1 | FO - Nâng cấp tính năng cũ |  |  |  | 
+R136: 1.1 | Màn hình danh sách lịch hẹn |  |  |  | 
+R137:  | FE-  Sửa màn hình lịch hẹn đã tạo thêm lịch hẹn mua ô tô |  |  |  | 
+R138:  | BE- Sửa API lịch hẹn đã tạo |  |  |  | 
+R139: 1.2 | Trang chủ bất động sản - gợi ý cho bạn |  |  |  | 
+R140:  | FE- Màn hình hiển thị danh sách ô tô gợi ý cho bạn |  |  |  | 
+R141:  | BE- Job tổng hợp điểm gợi ý cho sản phẩm bất động sản |  |  |  | 
+R142:  | BE - Sửa API danh sách dự án gợi ý cho bạn |  |  |  | 
+R143: 1.3 | Màn hình xem video |  |  |  | 
+R144:  | BE - Sửa API danh sách video thêm video sản phẩm ô tô và chi |  |  |  | 
+R145:  | BE- API download video kèm watermark (Xử lý video add thêm w |  |  |  | 
+R146: 1.4 | Màn hình danh sách thông báo |  |  |  | 
+R147:  | FE-  Hiển thị số lượng thông báo chưa đọc |  |  |  | 
+R148:  | BE - API count số lượng thông báo chưa đọc |  |  |  | 
+R149:  | FE- Hiển thị danh sách thông báo đã đọc/chưa đọc |  |  |  | 
+R150:  | BE- Sửa API danh sách thông báo thêm trường  đã đọc/chưa đọc |  |  |  | 
+R151:  | FE- Đánh dấu thông báo là đã đọc |  |  |  | 
+R152:  | BE- API đánh dấu thông báo đã đọc |  |  |  | 
+R153: 1.5 | Màn hình công cụ tính toán vay |  |  |  | 
+R154:  | BE- Sửa API tính toán khoản vay |  |  |  | 
+R155: 1.6 | Màn hình danh sách/chi tiết sản phẩm vay |  |  |  | 
+R156:  | FE- Sửa màn hình chi tiết sản phẩm vay |  |  |  | 
+R157: 1.7 | Màn hình đặt lịch hẹn tư vấn vay |  |  |  | 
+R158:  | BE- Sửa API đăng ký lịch hẹn |  |  |  | 
+R159: 2 | FO - Phát triển tính năng mới |  |  |  | 
+R160: 2.1 | Màn hình tìm kiếm nhanh/ tìm kiếm nâng cao ô tô |  |  |  | 
+R161:  | BE - API lấy thông tin showroom (tách riêng ko chung api tha |  |  |  | 
+R162:  | BE- API danh sách xe theo điều kiện tìm kiếm |  |  |  | 
+R163: 2.2 | Trang chủ ô tô - video cho bạn |  |  |  | 
+R164:  | FE - Hiển thị danh sách video ô tô cho bạn |  |  |  | 
+R165:  | BE - Sửa API lấy danh sách video gợi ý theo type ô tô |  |  |  | 
+R166: 2.3 | Trang chủ ô tô - tin tức |  |  |  | 
+R167:  | FE - Hiển thị danh sách tin tức cho bạn |  |  |  | 
+R168:  | BE - Sửa API lấy danh sách tin tức theo type ô tô |  |  |  | 
+R169:  | FE - Màn hình danh sách tin tức ô tô riêng (tin thị trường,  |  |  |  | 
+R170: 2.4 | Đăng ký lái thử |  |  |  | 
+R171:  | FE- Màn hình nhập thông tin đăng ký lái thử |  |  |  | 
+R172:  | BE- API xác nhận OTP và lưu thông tin đăng ký lái thử |  |  |  | 
+R173:  | BE- Gửi OTT và SMS tới cán bộ chi nhánh đầu mối |  |  |  | 
+R174: 2.5 | Ưu đãi đặc quyền |  |  |  | 
+R175:  | FE- Màn hình danh sách ưu đãi đặc quyền |  |  |  | 
+R176:  | FE- Màn hình chi tiết ưu đãi đặc quyền |  |  |  | 
+R177:  | BE - API danh sách ưu đãi |  |  |  | 
+R178:  | BE- API chi tiết ưu đãi |  |  |  | 
+R179: 2.6 | AI tư vấn vay |  |  |  | 
+R180:  | MH nhập thông tin AI tư vấn vay |  |  |  | 
+R181:  | BE- API tính toán gói vay |  |  |  | 
+R182:  | MH lựa chọn gói vay |  |  |  | 
+R183:  | MH kết quả phê duyệt gói vay |  |  |  | 
+R184: 2.7 | Đọc QR code |  |  |  | 
+R185:  | BE- API đọc thông tin QR code |  |  |  | 
+R186: 3 | FO - WEB |  |  |  | 
+R187: 3.1 | Xây dựng framework |  |  |  | 
+R188:  | Dựng components theo design concept mới |  |  |  | 
+R189: 3.2 | Màn hình trang chủ |  |  |  | 
+R190:  | Naviagation + Tiện ích trang chủ (chưa có noti) |  |  |  | 
+R191:  | Banner Quảng cáo |  |  |  | 
+R192:  | Danh sách dự án đã kiểm chứng |  |  |  | 
+R193:  | Gợi ý cho bạn (Dự án nổi bật) |  |  |  | 
+R194: 3.3 | Màn hình tìm kiếm thông thường / nâng cao |  |  |  | 
+R195:  | Màn hình tìm kiếm thông thường |  |  |  | 
+R196:  | Màn hình kết quả tìm kiếm |  |  |  | 
+R197:  | Tìm kiếm nâng cao màn danh sách dự án |  |  |  | 
+R198:  | Tìm kiếm nâng cao màn danh sách căn hộ |  |  |  | 
+R199: 3.4 | Màn hình đăng ký đối tác hệ sinh thái |  |  |  | 
+R200:  | Form đăng ký hợp tác với BIDV |  |  |  | 
+R201: 3.5 | Màn hình Chi tiết Banner |  |  |  | 
+R202:  | Chi tiết banner |  |  |  | 
+R203: 3.6 | Màn hình thông tin chi tiết dự án |  |  |  | 
+R204:  | Header: Slide ảnh tổng quan dự án Thiết kế mặt bằng |  |  |  | 
+R205:  | Thông tin tổng quan dự án + tiến độ thanh toán |  |  |  | 
+R206:  | Thư viện hình ảnh + các actions điều hướng |  |  |  | 
+R207: 3.7 | Màn hình Danh sách căn hộ |  |  |  | 
+R208:  | Bộ lọc + danh sách căn hộ |  |  |  | 
+R209: 3.8 | Màn hình Thông tin chi tiết căn hộ |  |  |  | 
+R210:  | Thông tin chi tiết căn hộ |  |  |  | 
+R211: 3.9 | Xây dựng Web đáp ứng tiêu chuẩn SEO |  |  |  | 
+R212:  | SEO website |  |  |  | 

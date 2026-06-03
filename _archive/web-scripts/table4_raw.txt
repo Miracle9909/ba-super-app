@@ -1,0 +1,97 @@
+﻿=== TABLE 4: KIEM THU SIT (96 rows) ===
+R0: TT | Công việc | Ngày công | Đơn giá (VNĐ) | Thành tiền (VNĐ) | Ghi chú
+R1: 1 | Màn hình đăng tải video |  |  |  | 
+R2:  | Web- Sửa màn hình danh sách kèm điều kiện lọc (thêm trư |  |  |  | 
+R3:  | Web- Sửa màn hình thêm mới/chỉnh sửa video (thêm trường |  |  |  | 
+R4:  | Web- Sửa màn hình xem chi tiết video xe (thêm trường th |  |  |  | 
+R5:  | BE- Sửa API lưu và đẩy duyệt (thêm trường thông tin vid |  |  |  | 
+R6:  | BE- Sửa API danh sách video (thêm trường thông tin vide |  |  |  | 
+R7:  | BE- Sửa API xem chi tiết (thêm trường thông tin video ô |  |  |  | 
+R8: 2 | Màn hình quản lý tài khoản |  |  |  | 
+R9:  | BE - API export danh sách tài khoản |  |  |  | 
+R10: 3 | Màn hình chính sách hoa hồng |  |  |  | 
+R11:  | Web- Màn hình danh sách chính sách hoa hồng (kèm tìm ki |  |  |  | 
+R12:  | Web- Màn hình xem chi tiết chính sách hoa hồng |  |  |  | 
+R13:  | Web- Màn hình thêm mới chính sách hoa hồng (Tích hợp nh |  |  |  | 
+R14:  | Web- Chỉnh sửa chính sách hoa hồng |  |  |  | 
+R15:  | Web- Đẩy duyệt/ phê duyệt/ từ chối/ xóa/ đổi trạng thái |  |  |  | 
+R16:  | BE- API danh sách chính sách hoa hồng |  |  |  | 
+R17:  | BE- API chi tiết chính sách hoa hồng |  |  |  | 
+R18:  | BE- API lấy danh sách showroom (chọn dropdownlist) |  |  |  | 
+R19:  | BE- API thêm mới chính sách hoa hồng |  |  |  | 
+R20:  | BE- API chỉnh sửa chính sách hoa hồng |  |  |  | 
+R21:  | BE- API đẩy duyệt/ phê duyệt/ từ chối chính sách hoa hồ |  |  |  | 
+R22:  | BE- API thay đổi trạng thái (active, inactive) chính sá |  |  |  | 
+R23:  | BE- API xóa chính sách hoa hồng |  |  |  | 
+R24: 4 | Màn hình quản lý Cộng tác viên |  |  |  | 
+R25:  | Web- Màn hình danh sách cộng tác viên (kèm điều kiện lọ |  |  |  | 
+R26:  | Web- Màn hình xem chi tiết cộng tác viên |  |  |  | 
+R27:  | Web- Màn hình thêm mới cộng tác viên |  |  |  | 
+R28:  | Web- Chức năng upload file (import theo lô) |  |  |  | 
+R29:  | Web- Chỉnh sửa thông tin cộng tác viên |  |  |  | 
+R30:  | Web- Phê duyệt/từ chối/xóa yêu cầu |  |  |  | 
+R31:  | BE- API danh sách cộng tác viên |  |  |  | 
+R32:  | BE- API phê duyệt/ từ chối duyệt |  |  |  | 
+R33:  | BE- API  thêm mới thông tin cộng tác viên |  |  |  | 
+R34:  | BE - API sửa thông tin cộng tác viên |  |  |  | 
+R35:  | BE - API xóa thông tin cộng tác viên |  |  |  | 
+R36:  | BE - API xem chi tiết thông tin cộng tác viên |  |  |  | 
+R37:  | BE- API upload file và validate thông tin cộng tác viên |  |  |  | 
+R38: 5 | Màn hình quản lý sản phẩm vay |  |  |  | 
+R39:  | Web- Màn hình danh sách sản phẩm vay (kèm điều kiện lọc |  |  |  | 
+R40:  | Web- Màn hình xem chi tiết sản phẩm vay |  |  |  | 
+R41:  | Web- Màn hình thêm mới sản phẩm vay |  |  |  | 
+R42:  | Web- Chỉnh sửa thông tin sản phẩm vay |  |  |  | 
+R43:  | Web- Phê duyệt/từ chối/xóa yêu cầu |  |  |  | 
+R44:  | BE- API danh sách sản phẩm vay |  |  |  | 
+R45:  | BE- API phê duyệt/ từ chối duyệt |  |  |  | 
+R46:  | BE- API  thêm mới sản phẩm vay |  |  |  | 
+R47:  | BE - API sửa thông tin sản phẩm vay |  |  |  | 
+R48:  | BE - API xóa thông tin sản phẩm vay |  |  |  | 
+R49:  | BE - API xem chi tiết thông tin sản phẩm vay |  |  |  | 
+R50: 6 | Màn hình quản lý cán bộ nhận |  |  |  | 
+R51:  | Web- màn hình Quản lý cán bộ nhận |  |  |  | 
+R52: 7 | Báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R53:  | Web- màn hình báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R54:  | Web- export báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R55:  | BE- API lấy báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R56:  | BE- API export báo cáo khách hàng đặt lịch hẹn |  |  |  | 
+R57: 8 | Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R58:  | Web- Màn hình Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R59:  | Web- export Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R60:  | BE- API Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R61:  | BE- API export  Báo cáo khách hàng đăng ký lái thử |  |  |  | 
+R62: 9 | Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R63:  | Web- Màn hình Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R64:  | Web- export Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R65:  | BE- API Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R66:  | BE- API export  Báo cáo hoa hồng CTV từng chi nhánh |  |  |  | 
+R67: 10 | Quản lý đối tác kết nối (sàn bđs) |  |  |  | 
+R68:  | Web- Màn hình Danh sách Sàn BĐS |  |  |  | 
+R69: 11 | Quản lý QR code |  |  |  | 
+R70:  | Web- Màn hình danh sách QR code |  |  |  | 
+R71: 12 | Màn hình thông tin tài khoản |  |  |  | 
+R72:  | BE- Sửa API lấy thông tin tài khoản check role user có  |  |  |  | 
+R73:  | FE-  Sửa mục dự án yêu thích và video yêu thích thêm sả |  |  |  | 
+R74:  | BE - Sửa API dự án yêu thích và video yêu thích thêm sả |  |  |  | 
+R75:  | FE- Thêm màn hình khoản vay giới thiệu cho user CTV |  |  |  | 
+R76:  | BE- API danh sách khoản vay giới thiệu cho user CTV |  |  |  | 
+R77: 13 | Màn hình danh sách lịch hẹn |  |  |  | 
+R78:  | FE-  Sửa màn hình lịch hẹn đã tạo thêm lịch hẹn mua ô t |  |  |  | 
+R79:  | BE- Sửa API lịch hẹn đã tạo |  |  |  | 
+R80: 14 | Màn hình xem video |  |  |  | 
+R81:  | FE-  Sửa màn hình xem video thêm video sản phẩm ô tô và |  |  |  | 
+R82:  | BE - Sửa API danh sách video thêm video sản phẩm ô tô v |  |  |  | 
+R83:  | FE- Download video kèm watermark |  |  |  | 
+R84:  | BE- API download video kèm watermark (Xử lý video add t |  |  |  | 
+R85:  | FE-  Chức năng theo dõi chủ đầu tư |  |  |  | 
+R86:  | BE- API theo dõi chủ đầu tư |  |  |  | 
+R87: 15 | Trang chủ ô tô - video cho bạn |  |  |  | 
+R88:  | FE - Hiển thị danh sách video ô tô cho bạn |  |  |  | 
+R89:  | BE - Sửa API lấy danh sách video gợi ý theo type ô tô |  |  |  | 
+R90: 16 | Đăng ký lái thử |  |  |  | 
+R91:  | FE- Màn hình nhập thông tin đăng ký lái thử |  |  |  | 
+R92:  | BE- API xác nhận OTP và lưu thông tin đăng ký lái thử |  |  |  | 
+R93:  | BE- Gửi OTT và SMS tới cán bộ chi nhánh đầu mối |  |  |  | 
+R94: 17 | Xây dựng Web đáp ứng tiêu chuẩn SEO |  |  |  | 
+R95:  | Dynamic link tích hợp trên SEO website |  |  |  | 
