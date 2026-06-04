@@ -6,6 +6,7 @@ import type { ChatMessage } from '../../lib/llm/types';
 import { estimateTokens, TOKEN_WARNING_THRESHOLD } from '../../lib/llm/tokenBudget';
 import { embeddingClient, cosineSimilarity } from '../../lib/llm/embeddingClient';
 import { DomainPackLoader } from '../../lib/domain-pack/loader';
+import { buildDiscoveryChatPrompt, buildDraftGenerationPrompt } from '../../lib/llm/promptMaster';
 import type { DomainPack } from '../../lib/domain-pack/parser';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -156,42 +157,44 @@ export const DiscoveryTab: React.FC<DiscoveryTabProps> = ({ projectId }) => {
     await saveConversation(updatedMessages);
 
     try {
+      /* ── Build context: prefer full documents if within token budget ── */
       let context = '';
-      if (knowledge && knowledge.length > 0) {
+      const allSources = await db.sources.where('projectId').equals(projectId).toArray();
+      const allMarkdown = allSources.map(s => `[Source: ${s.name}]:\n${s.markdownContent || s.extractedText}`).join('\n\n---\n\n');
+
+      const sourceTokens = estimateTokens(allMarkdown);
+      if (allMarkdown && sourceTokens <= TOKEN_WARNING_THRESHOLD) {
+        context = allMarkdown;
+      } else if (knowledge && knowledge.length > 0) {
         const queryVector = await embeddingClient.embed(input);
         const scoredKnowledge = knowledge
           .filter(k => k.vector && k.vector.length > 0)
           .map(k => ({ ...k, score: cosineSimilarity(queryVector, k.vector!) }))
           .sort((a, b) => b.score - a.score);
-        const matches = scoredKnowledge.slice(0, 3).filter(k => k.score > 0.2);
+        const matches = scoredKnowledge.slice(0, 10).filter(k => k.score > 0.15);
         if (matches.length > 0) {
-          context = matches.map((m, i) => `[Source ${i+1}]: ${m.content.substring(0, 500)}...`).join('\n\n');
+          context = matches.map((m, i) => `[Relevant Snippet ${i+1}]: ${m.content}`).join('\n\n');
         }
       }
 
-      const contextTokens = estimateTokens(context);
-      if (contextTokens > TOKEN_WARNING_THRESHOLD) {
-        if (!confirm(`Cảnh báo: Context quá lớn (${contextTokens} tokens). Tiếp tục?`)) {
+      const finalTokenCount = estimateTokens(context);
+      if (finalTokenCount > TOKEN_WARNING_THRESHOLD) {
+        if (!confirm(`Cảnh báo: Context quá lớn (${finalTokenCount} tokens). Tiếp tục?`)) {
           setIsLoading(false);
           return;
         }
       }
 
-      let basePrompt = `You are a Senior Business Analyst. Answer based on the provided project context.
-Cite sources using [Source X]. At the end, extract key info:
----
-ENTITIES:
-- Entity [Source X]: Description
-RULES:
-- Rule [Source Y]: Description
-TERMS:
-- Term [Source Z]: Definition
+      /* ── Build memory block from extracted knowledge ── */
+      const memoryBlock = [
+        extractedData.entities.length > 0 ? `Entities: ${extractedData.entities.map(e => e.content).join('; ')}` : '',
+        extractedData.rules.length > 0 ? `Rules: ${extractedData.rules.map(r => r.content).join('; ')}` : '',
+        extractedData.terms.length > 0 ? `Terms: ${extractedData.terms.map(t => t.content).join('; ')}` : '',
+      ].filter(Boolean).join('\n');
 
-Mark unverified info as [Giả định].`;
-
-      const systemPrompt = domainPack
-        ? basePrompt + DomainPackLoader.generatePromptOverlay(domainPack)
-        : basePrompt;
+      /* ── Assemble system prompt via PromptMaster ── */
+      const domainOverlay = domainPack ? DomainPackLoader.generatePromptOverlay(domainPack) : undefined;
+      const systemPrompt = buildDiscoveryChatPrompt(domainOverlay, memoryBlock || undefined);
 
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
       const stream = anthropicProvider.streamResponse(updatedMessages, context, systemPrompt);
@@ -222,20 +225,22 @@ Mark unverified info as [Giả định].`;
 
   const handleGenerate = async () => {
     if (selectedOutputs.length === 0 || isLoading) return;
-    
-    const prompt = `Bạn là một Business Analyst chuyên nghiệp. Dựa vào các thông tin tri thức đã thu thập sau đây của dự án:
-    
-Entities:
-${extractedData.entities.map(e => '- ' + e.content).join('\n')}
 
-Rules:
-${extractedData.rules.map(r => '- ' + r.content).join('\n')}
+    /* ── Gather project documents ── */
+    const allSources = await db.sources.where('projectId').equals(projectId).toArray();
+    const allMarkdown = allSources.map(s => `[Source: ${s.name}]:\n${s.markdownContent || s.extractedText}`).join('\n\n---\n\n');
+    const docTokens = estimateTokens(allMarkdown);
+    const projectDocuments = (allMarkdown && docTokens <= TOKEN_WARNING_THRESHOLD) ? allMarkdown : '';
 
-Terms:
-${extractedData.terms.map(t => '- ' + t.content).join('\n')}
+    /* ── Build knowledge block ── */
+    const knowledgeBlock = [
+      extractedData.entities.length > 0 ? `Entities:\n${extractedData.entities.map(e => '- ' + e.content).join('\n')}` : '',
+      extractedData.rules.length > 0 ? `Rules:\n${extractedData.rules.map(r => '- ' + r.content).join('\n')}` : '',
+      extractedData.terms.length > 0 ? `Terms:\n${extractedData.terms.map(t => '- ' + t.content).join('\n')}` : '',
+    ].filter(Boolean).join('\n\n');
 
-Hãy tạo bản nháp (Draft) cho các loại tài liệu sau: ${selectedOutputs.join(', ')}.
-Vui lòng sử dụng định dạng Markdown, tổ chức cấu trúc rõ ràng với các tiêu đề (Heading), danh sách (List), và bảng (Table) nếu thấy phù hợp.`;
+    /* ── Assemble prompt via PromptMaster ── */
+    const prompt = buildDraftGenerationPrompt(selectedOutputs, projectDocuments, knowledgeBlock);
 
     const userMsg: ChatMessage = { role: 'user', content: `Hãy tạo bản nháp cho: ${selectedOutputs.join(', ')} dựa trên tri thức hiện tại.` };
     const updatedMessages = [...messages, userMsg];

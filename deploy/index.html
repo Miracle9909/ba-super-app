@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BA Super App v3 — Prototype</title>
+<meta name="description" content="Hệ thống AI hỗ trợ Business Analyst toàn diện: Discovery → User Story → BRD → SRS → Diagram → Sprint" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  #root { height: 100vh; }
+  body { font-family: 'Google Sans', 'Product Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: #f0f4f9; }
+  * { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #d2d6dd; border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+  ::-webkit-scrollbar-thumb:hover { background: #b9bec7; background-clip: padding-box; }
+  .font-mono { font-family: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- v1/v2 base (icons + atoms + data + components + screens reused) -->
+<script type="text/babel" data-presets="env,react" src="ba-icons.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-icons-extra.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba-data.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba-components.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba-dashboard.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba-tabs-a.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba-tabs-b.jsx"></script>
+
+<!-- v2 -->
+<script type="text/babel" data-presets="env,react" src="ba2-data.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-modal.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-tabs.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-discovery.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-tasks.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-output.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba2-app.jsx"></script>
+
+<!-- v3 overrides -->
+<script type="text/babel" data-presets="env,react" src="ba3-diagrams.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba3-discovery.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba3-tasks.jsx"></script>
+<script type="text/babel" data-presets="env,react" src="ba3-app.jsx"></script>
+
+<script type="text/babel" data-presets="env,react">
+  ReactDOM.createRoot(document.getElementById('root')).render(<BASuperAppV3 />);
+</script>
+</body>
+</html>

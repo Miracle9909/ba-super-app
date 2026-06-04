@@ -5,6 +5,7 @@ import { Card } from '../../ui/Card';
 import { Icon } from '../../ui/Icon';
 import { GhostBtn, PrimaryBtn } from '../../ui/Buttons';
 import { anthropicProvider } from '../../../lib/llm/anthropic';
+import { buildUserStoryPrompt } from '../../../lib/llm/promptMaster';
 
 interface UserStoryViewProps {
   projectId: string;
@@ -27,17 +28,7 @@ export const UserStoryView: React.FC<UserStoryViewProps> = ({ projectId, onBack 
 
     try {
       const context = knowledgeItems?.map(k => `[${k.type?.toUpperCase()}]: ${k.content}`).join('\n') || '';
-      const prompt = `As a Business Analyst, generate a comprehensive Agile User Story based on the following inputs:
-Actor: ${actor}
-Goal: ${goal}
-Benefit: ${benefit}
-
-Please provide:
-1. The formal User Story statement (As a... I want to... So that...).
-2. Detailed Acceptance Criteria (Given/When/Then format).
-3. Any edge cases or out-of-scope notes.
-
-Return ONLY the markdown content.`;
+      const prompt = buildUserStoryPrompt(actor, goal, benefit, context);
 
       const response = await anthropicProvider.generateResponse([{ role: 'user', content: prompt }], context, 'You are an expert Agile Business Analyst.');
 

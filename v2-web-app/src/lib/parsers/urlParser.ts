@@ -1,6 +1,7 @@
+import TurndownService from 'turndown';
 import { splitTextIntoChunks } from './chunking';
 
-export const parseUrl = async (url: string): Promise<{ text: string, chunks: string[] }> => {
+export const parseUrl = async (url: string): Promise<{ text: string, markdown: string, chunks: string[] }> => {
   try {
     // Basic URL validation — side effect validates the URL format
     new URL(url);
@@ -21,12 +22,22 @@ export const parseUrl = async (url: string): Promise<{ text: string, chunks: str
       throw new Error("Không thể tải nội dung từ URL");
     }
     
-    // A very simple regex-based HTML to text extractor (since this is client side)
-    // Strip script and style elements
-    let text = data.contents.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, ' ');
-    text = text.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, ' ');
-    // Replace <br>, <p>, <div>, etc with newlines
-    text = text.replace(/<br\s*[\/]?>/gi, '\n');
+    const htmlContent = data.contents;
+    
+    // Remove scripts and styles before parsing
+    let cleanHtml = htmlContent.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+    cleanHtml = cleanHtml.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+    
+    // Convert HTML to Markdown using Turndown
+    const turndownService = new TurndownService({
+      headingStyle: 'atx',
+      codeBlockStyle: 'fenced'
+    });
+    
+    const markdown = turndownService.turndown(cleanHtml);
+    
+    // Generate plain text version for embedding
+    let text = cleanHtml.replace(/<br\s*[\/]?>/gi, '\n');
     text = text.replace(/<\/p>/gi, '\n\n');
     text = text.replace(/<\/div>/gi, '\n');
     text = text.replace(/<\/h[1-6]>/gi, '\n\n');
@@ -37,12 +48,12 @@ export const parseUrl = async (url: string): Promise<{ text: string, chunks: str
     // Clean up excessive whitespace
     text = text.replace(/\s+/g, ' ').replace(/\n\s*\n/g, '\n\n').trim();
 
-    if (!text || text.length < 50) {
+    if (!markdown || markdown.length < 50) {
        throw new Error("Nội dung trang web quá ngắn hoặc không thể trích xuất.");
     }
 
-    const chunks = splitTextIntoChunks(text, 1000, 200);
-    return { text, chunks };
+    const chunks = splitTextIntoChunks(markdown, 1000, 200);
+    return { text, markdown, chunks };
   } catch (error: any) {
     console.error("URL parsing error:", error);
     throw new Error(error.message || "Failed to parse URL");

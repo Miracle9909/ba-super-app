@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { splitTextIntoChunks } from '../../lib/parsers/chunking';
 import { embeddingClient } from '../../lib/llm/embeddingClient';
 import { parseUrl } from '../../lib/parsers/urlParser';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface SourcesTabProps {
   projectId: string;
@@ -21,6 +23,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
   const [urlInput, setUrlInput] = useState('');
   const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'markdown' | 'raw'>('markdown');
 
   const startFileWorker = async (sourceId: string, buffer: ArrayBuffer, fileType: string) => {
     const worker = new Worker(new URL('../../lib/parsers/fileParserWorker.ts', import.meta.url), {
@@ -28,9 +31,10 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
     });
 
     worker.onmessage = async (e) => {
-      const { status, text, error } = e.data;
-      if (status === 'success') {
-        const chunks = splitTextIntoChunks(text, 1000);
+      const { text, markdown, error } = e.data;
+      if (!error) {
+        const contentToChunk = markdown || text || '';
+        const chunks = splitTextIntoChunks(contentToChunk, 1000);
         
         const knowledgeItems = [];
         for (const chunk of chunks) {
@@ -58,6 +62,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
         await db.sources.update(sourceId, {
           status: 'ready',
           extractedText: text,
+          markdownContent: markdown || text,
           chunks: chunks,
           updatedAt: Date.now()
         });
@@ -149,12 +154,38 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
     }
   };
 
+  /**
+   * Auto-detect if content looks like Markdown.
+   * Checks for headings, lists, tables, code fences, bold/italic.
+   */
+  const detectMarkdown = (content: string): boolean => {
+    const mdSignals = [
+      /^#{1,6}\s+/m,           // Headings
+      /^\s*[-*+]\s/m,          // Unordered lists
+      /^\s*\d+\.\s/m,          // Ordered lists
+      /^\|.+\|$/m,             // Tables
+      /^```/m,                 // Code fences
+      /\*\*.+\*\*/,            // Bold
+      /\[.+\]\(.+\)/,          // Links
+    ];
+    const matchCount = mdSignals.filter(re => re.test(content)).length;
+    return matchCount >= 2; // At least 2 markdown signals → treat as markdown
+  };
+
   const handlePasteSubmit = async () => {
     if (!pasteTitle.trim() || !pasteContent.trim()) return;
-    
+
     setIsUploading(true);
     const sourceId = uuidv4();
     try {
+      // Auto-detect: is the pasted content Markdown or plain text?
+      const isMarkdown = detectMarkdown(pasteContent);
+      const markdownContent = isMarkdown
+        ? pasteContent
+        : `# ${pasteTitle.trim()}\n\n${pasteContent.split('\n').map(line => line.trim()).filter(Boolean).join('\n\n')}`;
+
+      const chunks = splitTextIntoChunks(markdownContent, 1000);
+
       await db.sources.add({
         id: sourceId,
         projectId,
@@ -162,30 +193,30 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
         type: 'text',
         status: 'ready',
         extractedText: pasteContent,
-        chunks: splitTextIntoChunks(pasteContent, 1000),
+        markdownContent,
+        chunks,
         size: pasteContent.length,
         provenance: pasteTitle.trim(),
         createdAt: Date.now(),
         updatedAt: Date.now()
       });
 
-      const chunks = splitTextIntoChunks(pasteContent, 1000);
       const knowledgeItems = [];
-      for (const chunk of chunks) {
+      for (let i = 0; i < chunks.length; i++) {
         try {
-          const vector = await embeddingClient.embed(chunk);
+          const vector = await embeddingClient.embed(chunks[i]);
           knowledgeItems.push({
             id: uuidv4(),
             sourceId,
             projectId,
             type: 'text' as const,
-            content: chunk,
+            content: chunks[i],
             vector,
             createdAt: Date.now(),
             updatedAt: Date.now()
           });
         } catch (err) {
-          console.error("Embedding failed for paste chunk", err);
+          console.error(`Embedding failed for paste chunk ${i + 1}/${chunks.length}`, err);
         }
       }
 
@@ -209,7 +240,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
     setIsUploading(true);
     const sourceId = uuidv4();
     try {
-      const { text, chunks } = await parseUrl(urlInput.trim());
+      const { text, markdown, chunks } = await parseUrl(urlInput.trim());
       
       await db.sources.add({
         id: sourceId,
@@ -218,6 +249,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
         type: 'url',
         status: 'ready',
         extractedText: text,
+        markdownContent: markdown,
         chunks: chunks,
         size: text.length,
         provenance: urlInput.trim(),
@@ -307,7 +339,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
             className="hidden" 
             ref={fileInputRef} 
             onChange={handleFileUpload}
-            accept=".pdf,.docx,.txt"
+            accept=".pdf,.docx,.txt,.csv,.xlsx,.html,.md"
             multiple
           />
           <div className="flex gap-3">
@@ -408,13 +440,39 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
                   {expandedSourceId === source.id && (
                     <tr className="bg-bg-hover">
                       <td colSpan={4} className="p-0 border-b border-border-color">
-                        <div className="p-6 max-h-[300px] overflow-y-auto">
-                          <h4 className="text-[13px] font-medium text-text-primary mb-2 flex items-center gap-2">
-                            <span className="material-symbols-rounded text-[16px]">notes</span>
-                            Nội dung đã trích xuất
-                          </h4>
-                          <div className="text-[13px] text-text-secondary whitespace-pre-wrap bg-white border border-border-color p-4 rounded-lg">
-                            {source.extractedText || 'Chưa có nội dung.'}
+                        <div className="p-6 max-h-[400px] overflow-y-auto">
+                          <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-[13px] font-medium text-text-primary flex items-center gap-2">
+                              <span className="material-symbols-rounded text-[16px]">notes</span>
+                              Nội dung đã trích xuất
+                            </h4>
+                            <div className="flex bg-bg-surface rounded-lg p-1 border border-border-color">
+                              <button
+                                onClick={() => setPreviewMode('markdown')}
+                                className={`px-3 py-1 rounded-md text-[12px] font-medium transition-colors ${previewMode === 'markdown' ? 'bg-white shadow-sm text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+                              >
+                                Markdown
+                              </button>
+                              <button
+                                onClick={() => setPreviewMode('raw')}
+                                className={`px-3 py-1 rounded-md text-[12px] font-medium transition-colors ${previewMode === 'raw' ? 'bg-white shadow-sm text-primary' : 'text-text-secondary hover:text-text-primary'}`}
+                              >
+                                Raw Text
+                              </button>
+                            </div>
+                          </div>
+                          <div className="text-[13px] text-text-secondary bg-white border border-border-color p-4 rounded-lg">
+                            {previewMode === 'markdown' && source.markdownContent ? (
+                              <div className="markdown-body text-[14px]">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                  {source.markdownContent}
+                                </ReactMarkdown>
+                              </div>
+                            ) : (
+                              <div className="whitespace-pre-wrap font-mono text-[13px]">
+                                {source.extractedText || 'Chưa có nội dung.'}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>

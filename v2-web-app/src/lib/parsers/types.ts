@@ -1,12 +1,13 @@
 export interface ParseFileRequest {
   id: string;
   file: File;
-  type: 'pdf' | 'docx' | 'txt';
+  type: 'pdf' | 'docx' | 'txt' | 'md' | 'html' | 'csv' | 'xlsx';
 }
 
 export interface ParseFileResponse {
   id: string;
   text: string;
+  markdown: string;
   error?: string;
 }
 

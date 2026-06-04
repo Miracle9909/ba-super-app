@@ -23,6 +23,7 @@ export interface Source {
   status: 'pending' | 'parsed' | 'ready' | 'error';
   blobId?: string;
   extractedText: string;
+  markdownContent: string;
   chunks: string[];
   size?: number; // Added size field in bytes
   provenance: string; // e.g., filename or url
@@ -91,7 +92,7 @@ const db = new Dexie('BASuperAppDatabase') as Dexie & {
 };
 
 // Schema declaration
-db.version(3).stores({
+db.version(4).stores({
   projects: 'id, name, domain, createdAt, updatedAt',
   sources: 'id, projectId, type, status, blobId, createdAt',
   blobs: 'id',

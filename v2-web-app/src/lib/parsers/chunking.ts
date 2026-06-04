@@ -1,61 +1,149 @@
-export function splitTextIntoChunks(text: string, chunkSize: number = 1000, _overlap: number = 200): string[] {
-  if (!text) return [];
-  
-  const separators = ['\n\n', '\n', '. ', ' ', ''];
-  
-  function split(textToSplit: string, separatorIndex: number): string[] {
-    const separator = separators[separatorIndex];
-    if (separator === undefined) {
-      // Fallback: character splitting
-      const chars = [];
-      for (let i = 0; i < textToSplit.length; i += chunkSize) {
-        chars.push(textToSplit.slice(i, i + chunkSize));
+/**
+ * Markdown-aware recursive text chunker.
+ *
+ * Key improvements over the naive version:
+ *  1. Splits at Markdown structural boundaries first (headings, paragraphs,
+ *     sentences, words) — never cuts inside a heading + its first paragraph.
+ *  2. Implements real overlap: the last `overlap` characters of the previous
+ *     chunk are prepended to the next chunk so the embedding model doesn't
+ *     lose context at chunk boundaries.
+ *  3. Injects the nearest parent heading as a "context prefix" into each
+ *     chunk so vector search results carry their section context.
+ */
+
+const MD_HEADING_RE = /^#{1,6}\s+/;
+
+/**
+ * Split text into chunks respecting Markdown structure with overlap.
+ * @param text       Input text (ideally Markdown).
+ * @param chunkSize  Max characters per chunk (default 1000).
+ * @param overlap    Characters of overlap between consecutive chunks (default 200).
+ */
+export function splitTextIntoChunks(
+  text: string,
+  chunkSize: number = 1000,
+  overlap: number = 200,
+): string[] {
+  if (!text || text.trim().length === 0) return [];
+
+  // --- Phase 1: Split into heading-scoped sections ---
+  const sections = splitByHeadings(text);
+
+  // --- Phase 2: For each section, split into chunks ≤ chunkSize ---
+  const rawChunks: string[] = [];
+  for (const section of sections) {
+    if (section.body.length <= chunkSize) {
+      rawChunks.push(formatChunk(section.heading, section.body));
+    } else {
+      const subChunks = recursiveSplit(section.body, chunkSize);
+      for (const sub of subChunks) {
+        rawChunks.push(formatChunk(section.heading, sub));
       }
-      return chars;
+    }
+  }
+
+  // --- Phase 3: Apply overlap ---
+  if (overlap <= 0 || rawChunks.length <= 1) return rawChunks;
+
+  const overlapped: string[] = [rawChunks[0]];
+  for (let i = 1; i < rawChunks.length; i++) {
+    const prev = rawChunks[i - 1];
+    const overlapText = prev.slice(-overlap);
+    overlapped.push(overlapText + '\n' + rawChunks[i]);
+  }
+
+  return overlapped;
+}
+
+/* ── Internal helpers ──────────────────────────────────────── */
+
+interface Section {
+  heading: string; // e.g. "## Requirements" — empty for preamble text
+  body: string;
+}
+
+/**
+ * Split markdown into sections, each anchored by its heading.
+ * Text before the first heading becomes a "preamble" section.
+ */
+function splitByHeadings(text: string): Section[] {
+  const lines = text.split('\n');
+  const sections: Section[] = [];
+  let currentHeading = '';
+  let currentBody: string[] = [];
+
+  for (const line of lines) {
+    if (MD_HEADING_RE.test(line)) {
+      // Flush previous section
+      if (currentBody.length > 0 || currentHeading) {
+        sections.push({ heading: currentHeading, body: currentBody.join('\n').trim() });
+      }
+      currentHeading = line.trim();
+      currentBody = [];
+    } else {
+      currentBody.push(line);
+    }
+  }
+
+  // Flush last section
+  if (currentBody.length > 0 || currentHeading) {
+    sections.push({ heading: currentHeading, body: currentBody.join('\n').trim() });
+  }
+
+  return sections.filter(s => s.body.length > 0 || s.heading.length > 0);
+}
+
+/** Prefix chunk with its section heading for context. */
+function formatChunk(heading: string, body: string): string {
+  if (!heading) return body.trim();
+  return `${heading}\n${body.trim()}`;
+}
+
+/**
+ * Recursive split at progressively finer boundaries:
+ *   paragraph → sentence → word → character
+ */
+function recursiveSplit(text: string, chunkSize: number): string[] {
+  const separators = ['\n\n', '\n', '. ', ' ', ''];
+
+  function doSplit(input: string, sepIdx: number): string[] {
+    if (input.length <= chunkSize) return [input];
+
+    const sep = separators[sepIdx];
+    if (sep === undefined) {
+      // Hard character split — last resort
+      const parts: string[] = [];
+      for (let i = 0; i < input.length; i += chunkSize) {
+        parts.push(input.slice(i, i + chunkSize));
+      }
+      return parts;
     }
 
-    const splits = separator ? textToSplit.split(separator) : textToSplit.split('');
+    const pieces = sep ? input.split(sep) : input.split('');
     const chunks: string[] = [];
-    let currentChunk = '';
+    let current = '';
 
-    for (let i = 0; i < splits.length; i++) {
-      const s = splits[i];
-      const nextChunk = currentChunk ? currentChunk + separator + s : s;
+    for (const piece of pieces) {
+      const candidate = current ? current + sep + piece : piece;
 
-      if (nextChunk.length <= chunkSize) {
-        currentChunk = nextChunk;
+      if (candidate.length <= chunkSize) {
+        current = candidate;
       } else {
-        if (currentChunk) {
-          chunks.push(currentChunk);
-          // Simple overlap: take the last 'overlap' characters of currentChunk as the start of next
-          // But actually, we want to overlap by words/sentences if possible.
-          // For simplicity, we just start the next chunk with the current split. 
-          // Overlap implementation is complex for recursive. Let's do a basic sliding window if we want overlap, 
-          // but for recursive, we can just split and then we might not perfectly overlap.
-          // Let's implement a simpler approach that just handles max chunk size for now.
-          currentChunk = s; 
-          
-          // If the split itself is too large, recurse
-          if (currentChunk.length > chunkSize) {
-            const subChunks = split(currentChunk, separatorIndex + 1);
-            chunks.push(...subChunks.slice(0, -1));
-            currentChunk = subChunks[subChunks.length - 1] || '';
-          }
+        if (current) chunks.push(current);
+        // If single piece exceeds chunkSize, recurse with finer separator
+        if (piece.length > chunkSize) {
+          const subs = doSplit(piece, sepIdx + 1);
+          chunks.push(...subs.slice(0, -1));
+          current = subs[subs.length - 1] || '';
         } else {
-          // split is larger than chunkSize and currentChunk is empty
-          const subChunks = split(s, separatorIndex + 1);
-          chunks.push(...subChunks.slice(0, -1));
-          currentChunk = subChunks[subChunks.length - 1] || '';
+          current = piece;
         }
       }
     }
 
-    if (currentChunk) {
-      chunks.push(currentChunk);
-    }
-
+    if (current) chunks.push(current);
     return chunks;
   }
 
-  return split(text, 0);
+  return doSplit(text, 0);
 }
