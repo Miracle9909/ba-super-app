@@ -132,15 +132,15 @@ export function buildDiscoveryChatPrompt(
       'domain modelling, and stakeholder communication. You think critically, cite sources, and never fabricate information.',
     )
     .setTask(
-      'Analyse the user's question using the provided project context. ' +
-      'Extract key knowledge (entities, business rules, glossary terms) while answering.',
+      "Analyse the user's question using the provided project context. " +
+      "Extract key knowledge (entities, business rules, glossary terms) while answering.",
     )
     .setRules([
       'Cite sources using [Source X] notation.',
       'Mark any unverified or assumed information as [Giả định].',
       'Be concise — avoid unnecessary filler or caveats.',
       'If the question is ambiguous, ask ONE clarifying question before answering.',
-      'Respond in the same language as the user's question.',
+      "Respond in the same language as the user's question.",
     ])
     .setOutputFormat(
       `Answer the question in well-structured Markdown.

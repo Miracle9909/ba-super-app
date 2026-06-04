@@ -110,6 +110,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
           blobId: blobId,
           status: 'pending',
           extractedText: '',
+          markdownContent: '',
           chunks: [],
           size: file.size,
           provenance: file.name,
