@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from './Icon';
+import { resolveExpert } from '../../lib/ba/domainExpert';
 
 /* ---- IndustryBadge ---- */
 interface IndustryBadgeProps {
@@ -8,18 +9,18 @@ interface IndustryBadgeProps {
 }
 
 export const IndustryBadge: React.FC<IndustryBadgeProps> = ({ domain, size = 'sm' }) => {
-  const isBank = domain.toLowerCase().includes('bank');
-  const bg = isBank ? '#e8f0fe' : '#fce8e6';
-  const fg = isBank ? '#1967d2' : '#c5221f';
-  const pad = size === 'sm' ? '2px 10px' : '3px 12px';
+  const expert = resolveExpert(domain);
+  const pad = size === 'sm' ? '3px 10px 3px 8px' : '4px 12px 4px 9px';
   const fs = size === 'sm' ? 12 : 12.5;
+  const iconSize = size === 'sm' ? 13 : 14;
 
   return (
     <span
-      className="inline-flex items-center font-medium rounded-full leading-none whitespace-nowrap"
-      style={{ background: bg, color: fg, padding: pad, fontSize: fs }}
+      className="inline-flex items-center gap-1.5 font-medium rounded-full leading-none whitespace-nowrap"
+      style={{ background: expert.bg, color: expert.fg, padding: pad, fontSize: fs }}
     >
-      {domain}
+      <Icon name={expert.icon} size={iconSize} strokeWidth={2.1} />
+      {expert.short || expert.label}
     </span>
   );
 };

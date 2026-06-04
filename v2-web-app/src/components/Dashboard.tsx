@@ -36,11 +36,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenProject, onCreatePro
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span
-              className="text-[10px] font-bold px-1.5 py-0.5 rounded font-mono text-white bg-primary"
-            >
-              v3
-            </span>
             <span className="text-[11.5px] font-semibold uppercase tracking-wider text-primary">
               Local-first · Chuyên gia ngành
             </span>

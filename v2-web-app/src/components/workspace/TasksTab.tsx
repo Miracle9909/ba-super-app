@@ -3,6 +3,10 @@ import { Icon } from '../ui/Icon';
 import { Card } from '../ui/Card';
 import { UserStoryView } from './tasks/UserStoryView';
 import { NewReqView } from './tasks/NewReqView';
+import { FuncTreeView } from './tasks/FuncTreeView';
+import { EstimateView } from './tasks/EstimateView';
+import { EnhanceView } from './tasks/EnhanceView';
+import { DiagramsView } from './tasks/DiagramsView';
 
 /* Task card config matching prototype v3 */
 const TASK_CARDS = [
@@ -22,10 +26,13 @@ export const TasksTab: React.FC<TasksTabProps> = ({ projectId: _projectId }) => 
   const [activeTask, setActiveTask] = useState<string | null>(null);
 
   /* Sub-view routing */
-
-  /* Sub-view routing */
-  if (activeTask === 'new-req') return <NewReqView projectId={_projectId} onBack={() => setActiveTask(null)} />;
+  if (activeTask === 'new-req')    return <NewReqView    projectId={_projectId} onBack={() => setActiveTask(null)} />;
   if (activeTask === 'user-story') return <UserStoryView projectId={_projectId} onBack={() => setActiveTask(null)} />;
+  if (activeTask === 'func-list')  return <FuncTreeView  projectId={_projectId} onBack={() => setActiveTask(null)} />;
+  if (activeTask === 'estimation') return <EstimateView  projectId={_projectId} onBack={() => setActiveTask(null)} />;
+  if (activeTask === 'enhance')    return <EnhanceView   projectId={_projectId} onBack={() => setActiveTask(null)} />;
+  if (activeTask === 'diagrams')   return <DiagramsView  projectId={_projectId} onBack={() => setActiveTask(null)} />;
+  if (activeTask === 'brd-srs')    return <NewReqView    projectId={_projectId} onBack={() => setActiveTask(null)} />;
 
   /* Default: Task card grid */
   return (
