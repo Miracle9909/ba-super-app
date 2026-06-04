@@ -1,0 +1,18 @@
+name: Fintech
+version: 1.0.0
+description: "Domain pack cho lĩnh vực công nghệ tài chính (Fintech)"
+entities:
+  - "User"
+  - "Wallet"
+  - "Transaction"
+  - "BankAccount"
+  - "Card"
+rules:
+  - "Một người dùng (User) có thể có nhiều ví điện tử (Wallet)."
+  - "Giao dịch (Transaction) phải được xác thực trước khi xử lý."
+  - "Số dư ví không được âm."
+terms:
+  - name: "KYC"
+    definition: "Know Your Customer - Quy trình xác minh danh tính khách hàng."
+  - name: "AML"
+    definition: "Anti-Money Laundering - Chống rửa tiền."

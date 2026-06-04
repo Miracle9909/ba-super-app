@@ -1,0 +1,18 @@
+name: Telecom
+version: 1.0.0
+description: "Domain pack cho lĩnh vực viễn thông (Telecom)"
+entities:
+  - "Subscriber"
+  - "Plan"
+  - "Service"
+  - "Bill"
+  - "Device"
+rules:
+  - "Mỗi thuê bao (Subscriber) phải đăng ký ít nhất một gói cước (Plan)."
+  - "Hóa đơn (Bill) được tạo tự động vào cuối chu kỳ thanh toán."
+  - "Dịch vụ (Service) có thể bị tạm ngưng nếu hóa đơn quá hạn."
+terms:
+  - name: "Postpaid"
+    definition: "Gói cước trả sau, thanh toán theo chu kỳ."
+  - name: "Prepaid"
+    definition: "Gói cước trả trước, cần nạp tiền trước khi sử dụng."
