@@ -1,0 +1,18 @@
+name: SaaS
+version: 1.0.0
+description: "Domain pack cho lĩnh vực phần mềm dạng dịch vụ (SaaS)"
+entities:
+  - "Tenant"
+  - "User"
+  - "Subscription"
+  - "Feature"
+  - "Invoice"
+rules:
+  - "Người dùng (User) phải thuộc về một tổ chức (Tenant)."
+  - "Truy cập tính năng (Feature) phụ thuộc vào gói đăng ký (Subscription)."
+  - "Hóa đơn (Invoice) được tính theo chu kỳ gói đăng ký."
+terms:
+  - name: "Multi-tenancy"
+    definition: "Kiến trúc phần mềm phục vụ nhiều khách hàng (tenants) trên cùng một hệ thống."
+  - name: "MRR"
+    definition: "Monthly Recurring Revenue - Doanh thu định kỳ hàng tháng."

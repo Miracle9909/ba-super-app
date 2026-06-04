@@ -1,0 +1,18 @@
+name: Healthcare
+version: 1.0.0
+description: "Domain pack cho lĩnh vực y tế chăm sóc sức khỏe (Healthcare)"
+entities:
+  - "Patient"
+  - "Doctor"
+  - "Appointment"
+  - "MedicalRecord"
+  - "Prescription"
+rules:
+  - "Một bệnh nhân (Patient) phải có hồ sơ y tế (MedicalRecord)."
+  - "Chỉ bác sĩ (Doctor) mới được phép kê đơn thuốc (Prescription)."
+  - "Cuộc hẹn (Appointment) phải được lên lịch trước."
+terms:
+  - name: "EMR"
+    definition: "Hồ sơ y tế điện tử (Electronic Medical Record)."
+  - name: "Triage"
+    definition: "Phân loại bệnh nhân để xác định mức độ ưu tiên điều trị."

@@ -1,0 +1,18 @@
+name: General
+version: 1.0.0
+description: "Domain pack tổng quát cho các lĩnh vực khác"
+entities:
+  - "User"
+  - "Role"
+  - "Permission"
+  - "Document"
+  - "Task"
+rules:
+  - "Người dùng (User) phải có ít nhất một vai trò (Role)."
+  - "Quyền truy cập (Permission) được cấp thông qua vai trò."
+  - "Nhiệm vụ (Task) phải được giao cho người dùng cụ thể."
+terms:
+  - name: "Authentication"
+    definition: "Xác thực danh tính người dùng."
+  - name: "Authorization"
+    definition: "Kiểm tra quyền truy cập của người dùng."

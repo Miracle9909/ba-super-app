@@ -4,6 +4,7 @@ import { db } from '../../db/db';
 import { v4 as uuidv4 } from 'uuid';
 import { exportDB, importInto } from "dexie-export-import";
 import { Icon } from '../ui/Icon';
+import { SettingsModal } from './SettingsModal';
 
 /* ---- Nav config matching prototype ---- */
 const NAV_ITEMS = [
@@ -33,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeNav, onNav, onCreateProj
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [newProject, setNewProject] = useState({ name: '', domain: 'Banking', description: '' });
 
   const handleCreateProject = async (e: React.FormEvent) => {
@@ -181,16 +183,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeNav, onNav, onCreateProj
         </div>
 
         {/* User profile card */}
-        <div className="mt-2 mb-1 flex items-center gap-3 px-3 py-2.5 rounded-2xl border border-border-color bg-bg-surface">
+        <div className="mt-2 mb-1 flex items-center gap-3 px-3 py-2.5 rounded-2xl border border-border-color bg-bg-surface group">
           <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-semibold shrink-0 bg-primary">
             BA
           </div>
-          <div className="leading-tight min-w-0">
+          <div className="leading-tight min-w-0 flex-1">
             <div className="text-[13px] font-semibold truncate text-text-primary">Người dùng</div>
             <div className="text-[11.5px] truncate text-text-secondary">Business Analyst</div>
           </div>
+          <button 
+            onClick={() => setIsSettingsOpen(true)}
+            className="w-7 h-7 rounded-full flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors opacity-0 group-hover:opacity-100"
+            title="Cài đặt hệ thống"
+          >
+            <Icon name="settings" size={16} />
+          </button>
         </div>
       </aside>
+
+      {/* Settings Modal */}
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+      />
 
       {/* Create Project Modal */}
       {showCreateModal && (

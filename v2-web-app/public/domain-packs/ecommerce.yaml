@@ -1,0 +1,18 @@
+name: E-commerce
+version: 1.0.0
+description: "Domain pack cho lĩnh vực thương mại điện tử (E-commerce)"
+entities:
+  - "Customer"
+  - "Product"
+  - "Order"
+  - "Cart"
+  - "Payment"
+rules:
+  - "Giá tổng của đơn hàng (Order) bao gồm giá trị các sản phẩm (Product), phí giao hàng và thuế."
+  - "Một khách hàng (Customer) có thể có nhiều đơn hàng."
+  - "Một sản phẩm (Product) có thể nằm trong nhiều đơn hàng."
+terms:
+  - name: "Cart"
+    definition: "Giỏ hàng lưu trữ tạm thời các sản phẩm mà khách hàng muốn mua trước khi thanh toán."
+  - name: "Checkout"
+    definition: "Quá trình hoàn tất đơn hàng, cung cấp thông tin giao hàng và thanh toán."

@@ -1,0 +1,18 @@
+name: Logistics
+version: 1.0.0
+description: "Domain pack cho lĩnh vực hậu cần và vận tải (Logistics)"
+entities:
+  - "Shipment"
+  - "Carrier"
+  - "Vehicle"
+  - "Warehouse"
+  - "Route"
+rules:
+  - "Mỗi lô hàng (Shipment) phải được gán cho một hãng vận chuyển (Carrier)."
+  - "Phương tiện (Vehicle) phải có lộ trình (Route) hợp lệ trước khi khởi hành."
+  - "Hàng hóa phải được lưu trữ tại kho (Warehouse) khi chưa giao."
+terms:
+  - name: "Bill of Lading"
+    definition: "Vận đơn, chứng từ xác nhận việc giao nhận hàng hóa."
+  - name: "Last-mile delivery"
+    definition: "Giao hàng chặng cuối từ trung tâm phân phối đến người nhận."

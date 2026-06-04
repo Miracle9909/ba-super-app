@@ -19,6 +19,60 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
   const [pasteContent, setPasteContent] = useState('');
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false);
   const [urlInput, setUrlInput] = useState('');
+  const [expandedSourceId, setExpandedSourceId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const startFileWorker = async (sourceId: string, buffer: ArrayBuffer, fileType: string) => {
+    const worker = new Worker(new URL('../../lib/parsers/fileParserWorker.ts', import.meta.url), {
+      type: 'module'
+    });
+
+    worker.onmessage = async (e) => {
+      const { status, text, error } = e.data;
+      if (status === 'success') {
+        const chunks = splitTextIntoChunks(text, 1000);
+        
+        const knowledgeItems = [];
+        for (const chunk of chunks) {
+          try {
+            const vector = await embeddingClient.embed(chunk);
+            knowledgeItems.push({
+              id: uuidv4(),
+              sourceId,
+              projectId,
+              type: 'text' as const,
+              content: chunk,
+              vector,
+              createdAt: Date.now(),
+              updatedAt: Date.now()
+            });
+          } catch (err) {
+            console.error("Embedding failed for chunk", err);
+          }
+        }
+        
+        if (knowledgeItems.length > 0) {
+          await db.knowledge.bulkAdd(knowledgeItems);
+        }
+
+        await db.sources.update(sourceId, {
+          status: 'ready',
+          extractedText: text,
+          chunks: chunks,
+          updatedAt: Date.now()
+        });
+      } else {
+        await db.sources.update(sourceId, {
+          status: 'error',
+          errorMessage: error,
+          updatedAt: Date.now()
+        });
+      }
+      worker.terminate();
+    };
+
+    worker.postMessage({ buffer, fileType }, [buffer]);
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -26,86 +80,40 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
     
     setIsUploading(true);
     try {
-      const file = files[0];
-      const sourceId = uuidv4();
-      const blobId = uuidv4();
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const sourceId = uuidv4();
+        const blobId = uuidv4();
 
-      // Lưu file vào blobs table
-      const buffer = await file.arrayBuffer();
-      await db.blobs.add({
-        id: blobId,
-        data: buffer,
-        mimeType: file.type,
-      });
+        const buffer = await file.arrayBuffer();
+        
+        // Cần copy buffer cho việc lưu DB và worker vì postMessage transfer ownership của ArrayBuffer gốc
+        const dbBuffer = buffer.slice(0);
+        const workerBuffer = buffer.slice(0);
 
-      // Tạo source record pending
-      await db.sources.add({
-        id: sourceId,
-        projectId,
-        name: file.name,
-        type: 'file',
-        blobId: blobId,
-        status: 'pending',
-        extractedText: '',
-        chunks: [],
-        provenance: file.name,
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      });
+        await db.blobs.add({
+          id: blobId,
+          data: dbBuffer,
+          mimeType: file.type,
+        });
 
-      // Bắt đầu worker để parse
-      const worker = new Worker(new URL('../../lib/parsers/fileParserWorker.ts', import.meta.url), {
-        type: 'module'
-      });
+        await db.sources.add({
+          id: sourceId,
+          projectId,
+          name: file.name,
+          type: 'file',
+          blobId: blobId,
+          status: 'pending',
+          extractedText: '',
+          chunks: [],
+          size: file.size,
+          provenance: file.name,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
 
-      worker.onmessage = async (e) => {
-        const { status, text, error } = e.data;
-        if (status === 'success') {
-          const chunks = splitTextIntoChunks(text, 1000);
-          
-          // Generate embeddings and create knowledge items
-          const knowledgeItems = [];
-          for (const chunk of chunks) {
-            try {
-              const vector = await embeddingClient.embed(chunk);
-              knowledgeItems.push({
-                id: uuidv4(),
-                sourceId,
-                projectId,
-                type: 'text' as const,
-                content: chunk,
-                vector,
-                createdAt: Date.now(),
-                updatedAt: Date.now()
-              });
-            } catch (err) {
-              console.error("Embedding failed for chunk", err);
-            }
-          }
-          
-          if (knowledgeItems.length > 0) {
-            await db.knowledge.bulkAdd(knowledgeItems);
-          }
-
-          // Cập nhật status
-          await db.sources.update(sourceId, {
-            status: 'ready',
-            extractedText: text,
-            updatedAt: Date.now()
-          });
-        } else {
-          // Cập nhật status lỗi
-          await db.sources.update(sourceId, {
-            status: 'error',
-            errorMessage: error,
-            updatedAt: Date.now()
-          });
-        }
-        worker.terminate();
-      };
-
-      worker.postMessage({ buffer, fileType: file.name.split('.').pop()?.toLowerCase() }, [buffer]);
-
+        startFileWorker(sourceId, workerBuffer, file.name.split('.').pop()?.toLowerCase() || '');
+      }
     } catch (err) {
       console.error("Upload error", err);
     } finally {
@@ -113,6 +121,20 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleRetry = async (sourceId: string, blobId?: string, fileName?: string) => {
+    if (!blobId || !fileName) return;
+    try {
+      await db.sources.update(sourceId, { status: 'pending', errorMessage: '', updatedAt: Date.now() });
+      const blob = await db.blobs.get(blobId);
+      if (blob) {
+        const workerBuffer = blob.data.slice(0);
+        startFileWorker(sourceId, workerBuffer, fileName.split('.').pop()?.toLowerCase() || '');
+      }
+    } catch(e) {
+      console.error("Retry failed", e);
     }
   };
 
@@ -140,7 +162,8 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
         type: 'text',
         status: 'ready',
         extractedText: pasteContent,
-        chunks: [],
+        chunks: splitTextIntoChunks(pasteContent, 1000),
+        size: pasteContent.length,
         provenance: pasteTitle.trim(),
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -195,7 +218,8 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
         type: 'url',
         status: 'ready',
         extractedText: text,
-        chunks: [],
+        chunks: chunks,
+        size: text.length,
         provenance: urlInput.trim(),
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -234,8 +258,47 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
     }
   };
 
+  const formatBytes = (bytes?: number) => {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (fileInputRef.current) {
+        // Trigger file upload with dropped files
+        const dataTransfer = new DataTransfer();
+        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+          dataTransfer.items.add(e.dataTransfer.files[i]);
+        }
+        fileInputRef.current.files = dataTransfer.files;
+        handleFileUpload({ target: fileInputRef.current } as any);
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full p-8">
+    <div 
+      className={`flex flex-col h-full p-8 transition-colors ${isDragging ? 'bg-primary/5 border-2 border-dashed border-primary rounded-xl' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-medium text-text-primary">Danh sách tài liệu</h2>
         <div>
@@ -245,6 +308,7 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
             ref={fileInputRef} 
             onChange={handleFileUpload}
             accept=".pdf,.docx,.txt"
+            multiple
           />
           <div className="flex gap-3">
             <button 
@@ -280,35 +344,83 @@ export const SourcesTab: React.FC<SourcesTabProps> = ({ projectId }) => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-border-color">
-                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-1/2">Tên tài liệu</th>
-                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-1/4">Trạng thái</th>
-                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-1/4">Thao tác</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-[40%]">Tên tài liệu</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-[20%]">Trạng thái</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-[20%]">Thông tin</th>
+                <th className="px-6 py-4 text-[13px] font-medium text-text-secondary w-[20%]">Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {sources.map((source) => (
-                <tr key={source.id} className="border-b border-border-color/50 hover:bg-bg-surface transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-rounded text-primary/70">description</span>
-                      <span className="text-[14px] text-text-primary font-medium">{source.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    {source.status === 'ready' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-100 text-green-700 text-[12px] font-medium"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>Sẵn sàng</span>}
-                    {source.status === 'pending' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-100 text-blue-700 text-[12px] font-medium"><span className="material-symbols-rounded text-[14px] animate-spin">sync</span>Đang xử lý</span>}
-                    {source.status === 'error' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-100 text-red-700 text-[12px] font-medium"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>Lỗi</span>}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button 
-                      onClick={() => handleDelete(source.id, source.blobId)}
-                      className="text-text-secondary hover:text-red-500 transition-colors p-1"
-                      title="Xóa tài liệu"
-                    >
-                      <span className="material-symbols-rounded text-[20px]">delete</span>
-                    </button>
-                  </td>
-                </tr>
+                <React.Fragment key={source.id}>
+                  <tr className={`border-b border-border-color/50 hover:bg-bg-surface transition-colors ${expandedSourceId === source.id ? 'bg-bg-surface' : ''}`}>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className="material-symbols-rounded text-primary/70">description</span>
+                        <div className="flex flex-col">
+                          <span className="text-[14px] text-text-primary font-medium truncate max-w-[250px]">{source.name}</span>
+                          {source.errorMessage && (
+                            <span className="text-[11px] text-red-500 truncate max-w-[250px]" title={source.errorMessage}>{source.errorMessage}</span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {source.status === 'ready' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-100 text-green-700 text-[12px] font-medium"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>Sẵn sàng</span>}
+                      {source.status === 'pending' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-100 text-blue-700 text-[12px] font-medium"><span className="material-symbols-rounded text-[14px] animate-spin">sync</span>Đang xử lý</span>}
+                      {source.status === 'error' && <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-100 text-red-700 text-[12px] font-medium"><span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>Lỗi</span>}
+                    </td>
+                    <td className="px-6 py-4 text-[12px] text-text-secondary">
+                      <div className="flex flex-col gap-0.5">
+                        <span>{formatBytes(source.size)}</span>
+                        <span>{source.chunks?.length || 0} chunks</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        {source.status === 'error' && source.type === 'file' && (
+                          <button 
+                            onClick={() => handleRetry(source.id, source.blobId, source.name)}
+                            className="text-text-secondary hover:text-primary transition-colors p-1"
+                            title="Thử lại"
+                          >
+                            <span className="material-symbols-rounded text-[20px]">refresh</span>
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => setExpandedSourceId(expandedSourceId === source.id ? null : source.id)}
+                          className={`text-text-secondary hover:text-primary transition-colors p-1 ${expandedSourceId === source.id ? 'text-primary' : ''}`}
+                          title="Xem nội dung"
+                          disabled={!source.extractedText}
+                        >
+                          <span className="material-symbols-rounded text-[20px]">{expandedSourceId === source.id ? 'visibility_off' : 'visibility'}</span>
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(source.id, source.blobId)}
+                          className="text-text-secondary hover:text-red-500 transition-colors p-1"
+                          title="Xóa tài liệu"
+                        >
+                          <span className="material-symbols-rounded text-[20px]">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedSourceId === source.id && (
+                    <tr className="bg-bg-hover">
+                      <td colSpan={4} className="p-0 border-b border-border-color">
+                        <div className="p-6 max-h-[300px] overflow-y-auto">
+                          <h4 className="text-[13px] font-medium text-text-primary mb-2 flex items-center gap-2">
+                            <span className="material-symbols-rounded text-[16px]">notes</span>
+                            Nội dung đã trích xuất
+                          </h4>
+                          <div className="text-[13px] text-text-secondary whitespace-pre-wrap bg-white border border-border-color p-4 rounded-lg">
+                            {source.extractedText || 'Chưa có nội dung.'}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

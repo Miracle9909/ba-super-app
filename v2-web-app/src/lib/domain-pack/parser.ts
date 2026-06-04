@@ -26,6 +26,7 @@ export interface DomainPack {
   terms?: DomainTerm[];
   entities?: DomainEntity[];
   compliance?: { name: string; description: string; }[];
+  suggested_questions?: string[];
 }
 
 export class DomainPackParser {
@@ -54,7 +55,8 @@ export class DomainPackParser {
         rules: parsed.rules || [],
         terms: parsed.terms || [],
         entities: parsed.entities || [],
-        compliance: parsed.compliance || []
+        compliance: parsed.compliance || [],
+        suggested_questions: parsed.suggested_questions || []
       };
     } catch (error) {
       if (error instanceof Error) {

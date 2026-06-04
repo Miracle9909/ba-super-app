@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
-import type { ParseFileRequest, ParseFileResponse } from './types';
+import type { ParseFileResponse } from './types';
 
 // Set worker src dynamically via Vite asset resolution
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -9,22 +9,20 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-self.onmessage = async (e: MessageEvent<ParseFileRequest>) => {
-  const { id, file, type } = e.data;
+self.onmessage = async (e: MessageEvent<any>) => {
+  const { id, buffer, fileType } = e.data;
 
   try {
     let text = '';
     
-    if (type === 'txt') {
-      text = await file.text();
-    } else if (type === 'docx') {
-      const arrayBuffer = await file.arrayBuffer();
-      // mammoth usually uses arrayBuffer natively in browser
-      const result = await mammoth.extractRawText({ arrayBuffer });
+    if (fileType === 'txt') {
+      const decoder = new TextDecoder('utf-8');
+      text = decoder.decode(buffer);
+    } else if (fileType === 'docx') {
+      const result = await mammoth.extractRawText({ arrayBuffer: buffer });
       text = result.value;
-    } else if (type === 'pdf') {
-      const arrayBuffer = await file.arrayBuffer();
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    } else if (fileType === 'pdf') {
+      const loadingTask = pdfjsLib.getDocument({ data: buffer });
       const pdf = await loadingTask.promise;
       
       let fullText = '';
@@ -39,7 +37,7 @@ self.onmessage = async (e: MessageEvent<ParseFileRequest>) => {
       }
       text = fullText;
     } else {
-      throw new Error(`Unsupported file type: ${type}`);
+      throw new Error(`Unsupported file type: ${fileType}`);
     }
 
     self.postMessage({ id, text } as ParseFileResponse);

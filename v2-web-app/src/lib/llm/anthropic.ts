@@ -16,6 +16,9 @@ export const getAnthropicClient = () => {
     anthropicClient = new Anthropic({
       apiKey: anthropicApiKey,
       dangerouslyAllowBrowser: true, // Required for client-side web apps
+      defaultHeaders: {
+        'anthropic-dangerous-direct-browser-access': 'true'
+      }
     });
   }
 

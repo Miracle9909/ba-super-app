@@ -8,14 +8,16 @@ interface PrimaryBtnProps {
   onClick?: () => void;
   className?: string;
   size?: 'sm' | 'md';
+  disabled?: boolean;
 }
 
-export const PrimaryBtn: React.FC<PrimaryBtnProps> = ({ children, icon, onClick, className = '', size = 'md' }) => {
+export const PrimaryBtn: React.FC<PrimaryBtnProps> = ({ children, icon, onClick, className = '', size = 'md', disabled = false }) => {
   const sizes = { sm: 'h-9 px-3.5 text-[13px]', md: 'h-10 px-4 text-[13.5px]' };
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-medium text-white transition-colors shadow-sm bg-primary hover:bg-primary-hover ${sizes[size]} ${className}`}
+      disabled={disabled}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-medium text-white transition-colors shadow-sm bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:bg-border-color disabled:text-text-disabled ${sizes[size]} ${className}`}
     >
       {icon && <Icon name={icon} size={17} strokeWidth={2} />}
       {children}
@@ -30,13 +32,15 @@ interface GhostBtnProps {
   onClick?: () => void;
   className?: string;
   tone?: 'default' | 'primary';
+  disabled?: boolean;
 }
 
-export const GhostBtn: React.FC<GhostBtnProps> = ({ children, icon, onClick, className = '', tone = 'default' }) => {
+export const GhostBtn: React.FC<GhostBtnProps> = ({ children, icon, onClick, className = '', tone = 'default', disabled = false }) => {
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center justify-center gap-2 h-9 px-3.5 rounded-full text-[13px] font-medium border border-border-color bg-white transition-colors hover:bg-bg-hover ${
+      disabled={disabled}
+      className={`inline-flex items-center justify-center gap-2 h-9 px-3.5 rounded-full text-[13px] font-medium border border-border-color bg-white transition-colors hover:bg-bg-hover disabled:opacity-50 disabled:cursor-not-allowed ${
         tone === 'primary' ? 'text-primary' : 'text-text-secondary'
       } ${className}`}
     >

@@ -24,6 +24,7 @@ export interface Source {
   blobId?: string;
   extractedText: string;
   chunks: string[];
+  size?: number; // Added size field in bytes
   provenance: string; // e.g., filename or url
   errorMessage?: string;
   createdAt: number;
@@ -56,21 +57,48 @@ export interface Conversation {
   updatedAt: number;
 }
 
+export interface Task {
+  id: string;
+  projectId: string;
+  type: string; // 'user-story', 'brd', 'srs', 'diagram', 'estimation', 'function-list', etc.
+  title: string;
+  content: string; // JSON string or markdown
+  status: 'draft' | 'refined' | 'approved';
+  score?: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface Output {
+  id: string;
+  projectId: string;
+  type: string; // 'brd', 'srs', 'user-story', 'diagram'
+  title: string;
+  content: string;
+  format: 'markdown' | 'json' | 'excel';
+  version: number;
+  createdAt: number;
+}
+
 const db = new Dexie('BASuperAppDatabase') as Dexie & {
   projects: EntityTable<Project, 'id'>;
   sources: EntityTable<Source, 'id'>;
   blobs: EntityTable<BlobData, 'id'>;
   knowledge: EntityTable<Knowledge, 'id'>;
   conversations: EntityTable<Conversation, 'id'>;
+  tasks: EntityTable<Task, 'id'>;
+  outputs: EntityTable<Output, 'id'>;
 };
 
 // Schema declaration
-db.version(2).stores({
+db.version(3).stores({
   projects: 'id, name, domain, createdAt, updatedAt',
   sources: 'id, projectId, type, status, blobId, createdAt',
   blobs: 'id',
   knowledge: 'id, projectId, type, sourceId, createdAt',
-  conversations: 'id, projectId, updatedAt'
+  conversations: 'id, projectId, updatedAt',
+  tasks: 'id, projectId, type, status, createdAt',
+  outputs: 'id, projectId, type, format, createdAt'
 });
 
 export { db };
